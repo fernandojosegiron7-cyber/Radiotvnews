@@ -1,0 +1,16 @@
+FG RADIO & TV PWA v4.0
+
+1. Sube todos los archivos a un repositorio GitHub.
+2. Crea un Fine-grained token limitado a ese repo con Contents: Read and write.
+3. Importa el repo en Vercel.
+4. En Vercel > Settings > Environment Variables agrega:
+   ADMIN_PASSWORD
+   SESSION_SECRET
+   GITHUB_OWNER
+   GITHUB_REPO
+   GITHUB_BRANCH
+   GITHUB_TOKEN
+5. Redeploy.
+6. Abre /admin.html.
+7. Inicia sesión y configura radio, TV, logo, programación y noticias.
+8. Guarda. El panel crea el commit y Vercel vuelve a desplegar.
