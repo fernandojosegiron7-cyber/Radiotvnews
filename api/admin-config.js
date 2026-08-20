@@ -21,8 +21,19 @@ module.exports=async(req,res)=>{
 
     if(req.method==="POST"){
       validate(req.body?.settings);
+
+      // Guarda una copia de la configuración anterior antes de reemplazarla.
+      const previous=await getFile(CONFIG_PATH);
+      if(previous){
+        await putFile(
+          "data/config.backup.json",
+          previous.content,
+          "Admin: respaldo automático de configuración"
+        );
+      }
+
       const json=JSON.stringify(req.body.settings,null,2)+"\n";
-      const result=await putFile(CONFIG_PATH,Buffer.from(json,"utf8"),"Admin: actualizar Radio & TV");
+      await putFile(CONFIG_PATH,Buffer.from(json,"utf8"),"Admin: actualizar Radio & TV");
       return res.status(200).json({ok:true,message:"Cambios guardados"});
     }
 
