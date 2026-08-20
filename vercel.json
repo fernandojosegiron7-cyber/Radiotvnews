@@ -1,15 +1,6 @@
 {
   "headers": [
     {
-      "source": "/admin.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
       "source": "/data/config.json",
       "headers": [
         {
@@ -42,6 +33,24 @@
         {
           "key": "Cache-Control",
           "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/admin.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
         }
       ]
     }
