@@ -2,7 +2,7 @@
   "stationName": "Balance Informativo",
   "shortName": "Balance Radio TV",
   "slogan": "Radio, TV y noticias en un solo lugar",
-  "logo": "/assets/uploads/logo/1787259698749-91e709c3.png",
+  "logo": "/assets/uploads/logo/1787261469564-3da11fc8.png",
   "accent": "#ff8800",
   "accent2": "#ff0000",
   "appearance": {
@@ -13,8 +13,7 @@
   "radio": {
     "name": "Radio en vivo",
     "streamUrl": "https://stream.zeno.fm/stm76db4tk8uv",
-    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv",
-    "fallbackArtwork": "/assets/uploads/radio/1787259941560-0fdb1052.png"
+    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv"
   },
   "tv": {
     "name": "TV en vivo",
