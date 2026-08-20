@@ -1,30 +1,30 @@
 window.APP_CONFIG = {
-  "stationName": "Tu Radio & TV",
-  "shortName": "RadioTV",
+  "stationName": "Balance Informativo",
+  "shortName": "Balance Radio TV",
   "slogan": "Radio, TV y noticias en un solo lugar",
-  "logo": "",
-  "accent": "#6D5EF9",
-  "accent2": "#14B8A6",
+  "logo": "/assets/uploads/logo/1787252043839-9681aeb0.jpg",
+  "accent": "#6d5ef9",
+  "accent2": "#14b8a6",
   "appearance": {
     "defaultTheme": "auto",
-    "lightBackground": "",
-    "darkBackground": ""
+    "darkBackground": "",
+    "lightBackground": ""
   },
   "radio": {
     "name": "Radio en vivo",
-    "streamUrl": "",
-    "metadataUrl": "",
-    "fallbackArtwork": ""
+    "streamUrl": "https://stream.zeno.fm/stm76db4tk8uv",
+    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv",
+    "fallbackArtwork": "https://ibb.co/1YK0gnM8"
   },
   "tv": {
     "name": "TV en vivo",
-    "streamUrl": "",
+    "streamUrl": "https://live.streamhch.com/live/streams/hch1.m3u8",
     "poster": ""
   },
   "socials": {
-    "facebook": "",
+    "facebook": "https://www.facebook.com/share/1HPuCFRYDZ/?mibextid=wwXIfr",
     "instagram": "",
-    "tiktok": "",
+    "tiktok": "https://www.tiktok.com/@pedrobalanceinformativo?_r=1&_t=ZS-9931pal8qFp",
     "youtube": "",
     "whatsapp": ""
   },
@@ -52,24 +52,14 @@ window.APP_CONFIG = {
   ],
   "news": [
     {
-      "id": "bienvenida",
-      "title": "Bienvenido a la nueva PWA de Radio & TV",
-      "excerpt": "Radio, televisión, programación y noticias desde una sola aplicación.",
-      "body": "Desde el panel administrativo puedes cambiar el contenido, la programación, los streams, la apariencia y las noticias.",
-      "image": "",
-      "date": "Hoy",
-      "category": "Emisora",
-      "featured": true
-    },
-    {
       "id": "programacion",
-      "title": "Consulta la programación de la emisora",
-      "excerpt": "Revisa los programas y horarios disponibles.",
-      "body": "La programación se administra desde el panel privado y se guarda directamente en GitHub.",
-      "image": "",
       "date": "Hoy",
-      "category": "Programación",
-      "featured": false
+      "category": "Nacionales",
+      "title": "Capturan al tiktoker Urías Lobo tras polémico video que involucra a un menor",
+      "image": "/assets/uploads/news/1787253989145-2081fcd0.jpg",
+      "excerpt": "El creador de contenido Urías Lobo fue capturado en Danlí, El Paraíso, luego de una polémica generada por un video difundido en redes sociales en el que aparece un menor de edad.\n\nEl caso provocó críticas y la intervención de las autoridades, que iniciaron acciones legales para investigar lo ocurrido. Lobo quedó a disposición de la justicia mientras continúa el proceso correspondiente.",
+      "body": "El creador de contenido Urías Lobo fue capturado en Danlí, El Paraíso, tras la controversia generada por la difusión de un video en redes sociales en el que aparece involucrado un menor de edad.\n\nLas imágenes provocaron numerosas reacciones y cuestionamientos entre usuarios de redes sociales, lo que posteriormente motivó la intervención de las autoridades encargadas de investigar posibles vulneraciones a los derechos del menor.\n\nDe acuerdo con la información conocida sobre el caso, las autoridades iniciaron las diligencias correspondientes y posteriormente procedieron con la detención del creador de contenido, quien quedó a disposición de los organismos competentes.\n\nEl caso continuará bajo investigación y será el proceso judicial el que determine las responsabilidades correspondientes. Por tratarse de un menor de edad, su identidad debe mantenerse protegida durante la cobertura del caso.",
+      "featured": true
     }
   ]
 };

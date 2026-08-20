@@ -30,3 +30,11 @@ GITHUB_TOKEN
 ## Importante
 Usa streams HTTPS.
 Para TV se recomienda HLS .m3u8 compatible con navegador/CORS.
+
+
+## v5.1 LIVE
+- La app consulta `/api/public-config` al abrir.
+- Esa función lee `data/config.json` directamente desde GitHub.
+- Después del primer despliegue de v5.1, los cambios guardados desde Admin pueden verse sin esperar otro redeploy.
+- Zeno usa EventSource/SSE para `api.zeno.fm/mounts/metadata/subscribe/...`.
+- Los streams Zeno terminados en `.m3u`, `.m3u8` o `.pls` se convierten automáticamente a la URL directa.

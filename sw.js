@@ -1,4 +1,4 @@
-const CACHE="radio-tv-pwa-v5";
+const CACHE="radio-tv-pwa-v5-1-live";
 const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./manifest.webmanifest","./icons/icon.svg"];
 
 self.addEventListener("install",e=>{
@@ -23,16 +23,22 @@ self.addEventListener("fetch",e=>{
     return;
   }
 
-  if(u.pathname==="/" || u.pathname.endsWith("/index.html") || u.pathname.endsWith("/app.js") || u.pathname.endsWith("/styles.css")){
-    e.respondWith(fetch(e.request,{cache:"no-store"}).then(r=>{
-      const copy=r.clone();
-      caches.open(CACHE).then(c=>c.put(e.request,copy));
-      return r;
-    }).catch(()=>caches.match(e.request)));
+  if(u.pathname==="/" || u.pathname.endsWith("/index.html") || u.pathname.endsWith("/app.js") || u.pathname.endsWith("/styles.css") || u.pathname.endsWith("/config.js")){
+    e.respondWith(
+      fetch(e.request,{cache:"no-store"}).then(r=>{
+        const copy=r.clone();
+        caches.open(CACHE).then(c=>c.put(e.request,copy));
+        return r;
+      }).catch(()=>caches.match(e.request))
+    );
     return;
   }
 
-  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{
-    const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r;
-  }).catch(()=>caches.match("./index.html"))));
+  e.respondWith(
+    caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{
+      const copy=r.clone();
+      caches.open(CACHE).then(c=>c.put(e.request,copy));
+      return r;
+    }).catch(()=>caches.match("./index.html")))
+  );
 });

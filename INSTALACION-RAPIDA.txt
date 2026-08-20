@@ -13,3 +13,12 @@ RADIO TV PWA COMPLETO v5
 5. Abre /admin.html
 6. Configura Radio, TV, Noticias, apariencia y redes.
 7. Pulsa Guardar en GitHub.
+
+
+NUEVO v5.1 LIVE
+1. Sube esta versión completa.
+2. Haz Redeploy UNA VEZ.
+3. Desde ese momento, al guardar desde Admin la app consulta el config más reciente de GitHub.
+4. Zeno recomendado:
+   Stream: https://stream.zeno.fm/stm76db4tk8uv
+   Metadata: https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv

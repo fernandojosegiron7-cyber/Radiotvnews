@@ -4,11 +4,20 @@
   const fallback = window.APP_CONFIG || {};
 
   async function loadConfig(){
-    try{
-      const r = await fetch(`/data/config.json?v=${Date.now()}`, {cache:"no-store"});
-      if(!r.ok) throw new Error("config");
-      return deepMerge(fallback, await r.json());
-    }catch(e){ return fallback; }
+    const sources=[
+      `/api/public-config?v=${Date.now()}`,
+      `/data/config.json?v=${Date.now()}`
+    ];
+    for(const url of sources){
+      try{
+        const r=await fetch(url,{cache:"no-store",headers:{"Cache-Control":"no-cache"}});
+        if(!r.ok) continue;
+        return deepMerge(fallback,await r.json());
+      }catch(e){
+        console.warn("No se pudo cargar",url,e);
+      }
+    }
+    return fallback;
   }
 
   function deepMerge(base, remote){
@@ -237,8 +246,14 @@
   }
 
   // Radio
+  function normalizeZenoAudioUrl(url=""){
+    const value=String(url).trim();
+    if(!/stream\.zeno\.fm/i.test(value)) return value;
+    return value.replace(/\.(m3u8?|pls)(\?.*)?$/i,"$2");
+  }
+
   const audio=$("#radioAudio");
-  const radioUrl=cfg.radio?.streamUrl||"";
+  const radioUrl=normalizeZenoAudioUrl(cfg.radio?.streamUrl||"");
   if(audio){
     if(radioUrl) audio.src=radioUrl;
     audio.volume=.8;
@@ -292,8 +307,11 @@
   }
 
   function applyMetadata(title,artist,artwork){
-    setText("#radioTitle",title);
-    setText("#radioArtist",artist);
+    const safeTitle=title||"En vivo";
+    const safeArtist=artist||cfg.radio?.name||cfg.stationName||"";
+
+    setText("#radioTitle",safeTitle);
+    setText("#radioArtist",safeArtist);
 
     if(artwork){
       const art=$("#radioArtwork");
@@ -303,33 +321,111 @@
     if("mediaSession" in navigator){
       try{
         navigator.mediaSession.metadata=new MediaMetadata({
-          title,artist,album:cfg.stationName||"",
+          title:safeTitle,
+          artist:safeArtist,
+          album:cfg.stationName||"",
           artwork:artwork?[{src:artwork}]:[]
         });
       }catch{}
     }
   }
 
-  async function refreshMetadata(){
+  function splitStreamTitle(value=""){
+    const raw=String(value||"").trim();
+    if(!raw) return {title:"En vivo",artist:cfg.radio?.name||cfg.stationName||""};
+
+    const pos=raw.indexOf(" - ");
+    if(pos>0){
+      return {
+        artist:raw.slice(0,pos).trim(),
+        title:raw.slice(pos+3).trim()
+      };
+    }
+
+    return {title:raw,artist:cfg.radio?.name||cfg.stationName||""};
+  }
+
+  function parseMetadata(data){
+    if(!data||typeof data!=="object") return null;
+
+    const streamTitle=data.streamTitle||data.stream_title||data.now_playing?.song?.text||"";
+    if(streamTitle){
+      const split=splitStreamTitle(streamTitle);
+      return {
+        title:data.title||data.track?.title||split.title,
+        artist:data.artist||data.track?.artist||split.artist,
+        artwork:data.artwork||data.cover||data.track?.artwork||cfg.radio?.fallbackArtwork||""
+      };
+    }
+
+    const title=data.title||data.song||data.track?.title||data.currentSong||"";
+    const artist=data.artist||data.track?.artist||data.currentArtist||"";
+    if(title||artist){
+      return {
+        title:title||"En vivo",
+        artist:artist||cfg.radio?.name||cfg.stationName||"",
+        artwork:data.artwork||data.cover||data.track?.artwork||cfg.radio?.fallbackArtwork||""
+      };
+    }
+    return null;
+  }
+
+  let zenoSource=null;
+
+  function connectZenoMetadata(url){
+    if(!url || typeof EventSource==="undefined") return false;
+    if(!/api\.zeno\.fm\/mounts\/metadata\/subscribe\//i.test(url)) return false;
+
+    try{
+      zenoSource=new EventSource(url);
+
+      zenoSource.onmessage=event=>{
+        try{
+          const parsed=parseMetadata(JSON.parse(event.data));
+          if(parsed) applyMetadata(parsed.title,parsed.artist,parsed.artwork);
+        }catch(e){
+          console.warn("Metadata Zeno inválida",e);
+        }
+      };
+
+      zenoSource.onerror=()=>{
+        console.warn("Zeno metadata reconectando...");
+      };
+
+      return true;
+    }catch(e){
+      console.warn("No se pudo iniciar metadata Zeno",e);
+      return false;
+    }
+  }
+
+  async function refreshJsonMetadata(){
     const url=cfg.radio?.metadataUrl;
     if(!url) return;
+
     try{
       const r=await fetch(url,{cache:"no-store"});
       if(!r.ok) return;
-      const d=await r.json();
-      applyMetadata(
-        d.title||d.song||d.track?.title||"En vivo",
-        d.artist||d.track?.artist||cfg.stationName||"",
-        d.artwork||d.cover||d.track?.artwork||cfg.radio?.fallbackArtwork||""
-      );
-    }catch{}
+      const parsed=parseMetadata(await r.json());
+      if(parsed) applyMetadata(parsed.title,parsed.artist,parsed.artwork);
+    }catch(e){
+      console.warn("Metadata JSON",e);
+    }
   }
 
   if(cfg.radio?.fallbackArtwork){
-    applyMetadata("Listo para reproducir",cfg.stationName||"",cfg.radio.fallbackArtwork);
+    applyMetadata("Listo para reproducir",cfg.radio?.name||cfg.stationName||"",cfg.radio.fallbackArtwork);
   }
-  refreshMetadata();
-  setInterval(refreshMetadata,15000);
+
+  const metadataUrl=String(cfg.radio?.metadataUrl||"").trim();
+  const zenoSSE=connectZenoMetadata(metadataUrl);
+
+  if(!zenoSSE && metadataUrl){
+    refreshJsonMetadata();
+    setInterval(refreshJsonMetadata,15000);
+  }
+
+  window.addEventListener("beforeunload",()=>zenoSource?.close());
 
   // TV
   const video=$("#tvVideo");
