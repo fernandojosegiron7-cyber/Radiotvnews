@@ -28,5 +28,5 @@ module.exports=async(req,res)=>{
 
     const result=await putFile(repoPath,buffer,`Admin: subir imagen ${safeFolder}`);
     return res.status(200).json({ok:true,path:`/${repoPath}`,commit:result.commitSha});
-  }catch(e){console.error(e);return res.status(500).json({error:e.message||"Error al subir imagen"})}
+  }catch(e){console.error(e);return res.status(500).json({error:"No se pudo subir la imagen"})}
 };

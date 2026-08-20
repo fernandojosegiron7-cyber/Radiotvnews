@@ -23,9 +23,9 @@ module.exports=async(req,res)=>{
       validate(req.body?.settings);
       const json=JSON.stringify(req.body.settings,null,2)+"\n";
       const result=await putFile(CONFIG_PATH,Buffer.from(json,"utf8"),"Admin: actualizar Radio & TV");
-      return res.status(200).json({ok:true,message:"Cambios guardados en GitHub",commit:result.commitSha});
+      return res.status(200).json({ok:true,message:"Cambios guardados"});
     }
 
     return res.status(405).json({error:"Método no permitido"});
-  }catch(e){console.error(e);return res.status(500).json({error:e.message||"Error al trabajar con GitHub"})}
+  }catch(e){console.error(e);return res.status(500).json({error:"No se pudieron guardar los cambios"})}
 };
