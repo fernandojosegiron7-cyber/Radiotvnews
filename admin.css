@@ -13,3 +13,29 @@
 .login-page .login-wrap{
   min-height:100dvh;
 }
+
+
+/* v6.0 · editor de titulares del scroll */
+.ticker-editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0 10px}
+.ticker-editor-head strong,.ticker-editor-head small{display:block}
+.ticker-editor-head small{margin-top:4px;color:#95a3b5}
+.ticker-headline-editor{display:grid;gap:8px}
+.ticker-headline-row{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025)}
+.ticker-headline-check{display:grid!important;place-items:center;margin:0!important}
+.ticker-headline-check input{width:18px!important;height:18px}
+@media(max-width:760px){.ticker-editor-head{align-items:flex-start;flex-direction:column}.ticker-headline-row{grid-template-columns:30px 1fr}.ticker-headline-row .danger{grid-column:2;justify-self:start}}
+
+
+/* v6.2 · pestaña Scroll */
+[data-panel="ticker"] .ticker-admin-box{
+  margin-bottom:0;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.035);
+}
+[data-panel="ticker"] .ticker-headline-row input[type="text"]{
+  min-height:46px;
+  font-size:14px;
+}
+[data-panel="ticker"] #addTickerHeadline{
+  font-weight:800;
+}

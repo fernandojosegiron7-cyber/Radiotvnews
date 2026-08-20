@@ -21,6 +21,7 @@
         <button class="tab" data-tab="tv">TV</button>
         <button class="tab" data-tab="schedule">Programación</button>
         <button class="tab" data-tab="news">Noticias</button>
+        <button class="tab" data-tab="ticker">Scroll</button>
         <button class="tab" data-tab="appearance">Apariencia</button>
         <button class="tab" data-tab="social">Redes</button>
       </aside>
@@ -71,9 +72,19 @@
         </section>
 
         <section class="panel" data-panel="news">
+          <div class="panel-head with-action"><div><small>CONTENIDO</small><h2>Noticias</h2></div><button class="secondary" id="addNews">+ Noticia</button></div>
+          <div id="newsEditor" class="repeat-list"></div>
+        </section>
+
+
+        <section class="panel" data-panel="ticker">
+          <div class="panel-head">
+            <small>BARRA INFORMATIVA</small>
+            <h2>Scroll de noticias</h2>
+          </div>
           <div class="ticker-admin-box">
             <small>SCROLL DE NOTICIAS</small>
-            <h3>Titulares manuales</h3>
+            <h3>Escribe los titulares del scroll</h3>
 
             <div class="grid two">
               <label class="check">
@@ -98,15 +109,13 @@
             <div class="ticker-editor-head">
               <div>
                 <strong>Titulares del scroll</strong>
-                <small>Máximo 10 titulares. Son independientes de las noticias publicadas.</small>
+                <small>Escribe aquí hasta 10 titulares. No tienen relación con las noticias publicadas.</small>
               </div>
               <button id="addTickerHeadline" class="secondary" type="button">+ Titular</button>
             </div>
 
             <div id="tickerHeadlineEditor" class="ticker-headline-editor"></div>
           </div>
-          <div class="panel-head with-action"><div><small>CONTENIDO</small><h2>Noticias</h2></div><button class="secondary" id="addNews">+ Noticia</button></div>
-          <div id="newsEditor" class="repeat-list"></div>
         </section>
 
         <section class="panel" data-panel="appearance">

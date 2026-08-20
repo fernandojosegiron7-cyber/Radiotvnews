@@ -54,12 +54,11 @@
     $("#darkBackground").value=settings.appearance?.darkBackground||"";
     $("#lightBackground").value=settings.appearance?.lightBackground||"";
 
-    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";    $("#tickerEnabled").checked=!!settings.newsTicker?.enabled;
+    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";
+
+    $("#tickerEnabled").checked=!!settings.newsTicker?.enabled;
     $("#tickerMinutes").value=String(Number(settings.newsTicker?.minutes||7));
     renderTickerHeadlines();
-
-    $("#rollupEnabled").checked=settings.featuredRollup?.enabled!==false;
-    $("#rollupSeconds").value=Number(settings.featuredRollup?.seconds||5);
     renderSchedule();
     renderNews();
   }
@@ -75,7 +74,9 @@
     settings.tv={name:$("#tvNameInput").value.trim(),streamUrl:$("#tvStream").value.trim(),poster:$("#tvPoster").value.trim()};
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};
     settings.socials={};
-    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();    settings.newsTicker={
+    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();
+
+    settings.newsTicker={
       enabled:$("#tickerEnabled")?.checked||false,
       minutes:Math.min(20,Math.max(1,Number($("#tickerMinutes")?.value||7))),
       headlines:$$("#tickerHeadlineEditor .ticker-headline-row")
@@ -85,11 +86,6 @@
         }))
         .filter(x=>x.text)
         .slice(0,10)
-    };
-
-    settings.featuredRollup={
-      enabled:$("#rollupEnabled")?.checked!==false,
-      seconds:Math.min(20,Math.max(3,Number($("#rollupSeconds")?.value||5)))
     };
 
     settings.schedule=$$("#scheduleEditor .repeat-item").map(item=>({
