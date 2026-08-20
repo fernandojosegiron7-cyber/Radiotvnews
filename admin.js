@@ -55,9 +55,6 @@
     $("#accent").value=settings.accent||"#6D5EF9";
     $("#accent2").value=settings.accent2||"#14B8A6";
     $("#logo").value=settings.logo||"";
-    $("#breakingEnabled").checked=!!settings.breakingNews?.enabled;
-    $("#breakingTextAdmin").value=settings.breakingNews?.text||"";
-    $("#breakingNewsId").value=settings.breakingNews?.newsId||"";
     $("#adminStation").textContent=settings.stationName||"Radio & TV";
 
     $("#radioName").value=settings.radio?.name||"";
@@ -74,6 +71,10 @@
 
     for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";
 
+    $("#tickerEnabled").checked=!!settings.newsTicker?.enabled;
+    $("#tickerMaxItems").value=Math.min(10,Math.max(1,Number(settings.newsTicker?.maxItems||10)));
+    $("#tickerMinutes").value=Math.min(20,Math.max(.5,Number(settings.newsTicker?.minutes||7)));
+
     $("#rollupEnabled").checked=settings.featuredRollup?.enabled!==false;
     $("#rollupSeconds").value=Number(settings.featuredRollup?.seconds||5);
     renderSchedule();
@@ -87,17 +88,17 @@
     settings.accent=$("#accent").value;
     settings.accent2=$("#accent2").value;
     settings.logo=$("#logo").value.trim();
-
-    settings.breakingNews={
-      enabled:$("#breakingEnabled")?.checked||false,
-      text:$("#breakingTextAdmin")?.value.trim()||"",
-      newsId:$("#breakingNewsId")?.value.trim()||""
-    };
     settings.radio={name:$("#radioName").value.trim(),streamUrl:$("#radioStream").value.trim(),metadataUrl:$("#metadataUrl").value.trim()};
     settings.tv={name:$("#tvNameInput").value.trim(),streamUrl:$("#tvStream").value.trim(),poster:$("#tvPoster").value.trim()};
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};
     settings.socials={};
     for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();
+
+    settings.newsTicker={
+      enabled:$("#tickerEnabled")?.checked||false,
+      maxItems:Math.min(10,Math.max(1,Number($("#tickerMaxItems")?.value||10))),
+      minutes:Math.min(20,Math.max(.5,Number($("#tickerMinutes")?.value||7)))
+    };
 
     settings.featuredRollup={
       enabled:$("#rollupEnabled")?.checked!==false,
@@ -118,7 +119,8 @@
       image:item.querySelector('[data-field="image"]').value.trim(),
       excerpt:item.querySelector('[data-field="excerpt"]').value.trim(),
       body:item.querySelector('[data-field="body"]').value.trim(),
-      featured:item.querySelector('[data-field="featured"]').checked
+      featured:item.querySelector('[data-field="featured"]').checked,
+      ticker:item.querySelector('[data-field="ticker"]').checked
     })).filter(x=>x.title||x.excerpt||x.body);
   }
 
@@ -174,7 +176,10 @@
         <input data-field="image" value="${attr(item.image||"")}" placeholder="Imagen">
         <textarea data-field="excerpt" placeholder="Resumen">${attr(item.excerpt||"")}</textarea>
         <textarea data-field="body" placeholder="Texto completo">${attr(item.body||"")}</textarea>
-        <label><input data-field="featured" type="checkbox" ${item.featured?"checked":""} style="width:auto"> Destacada</label>
+        <div class="news-checks">
+          <label><input data-field="featured" type="checkbox" ${item.featured?"checked":""} style="width:auto"> Destacada</label>
+          <label><input data-field="ticker" type="checkbox" ${item.ticker?"checked":""} style="width:auto"> Mostrar en scroll</label>
+        </div>
         <div class="upload-row"><input data-news-file type="file" accept="image/*"><button class="secondary" data-upload-news>Subir imagen</button></div>
       </div>`;
     div.querySelector(".danger").onclick=()=>div.remove();

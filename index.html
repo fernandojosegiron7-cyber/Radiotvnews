@@ -29,12 +29,12 @@
       <button id="installBtn" class="iconbtn" hidden aria-label="Instalar aplicación">＋</button>
     </div>
   </header>
-  <div id="breakingBar" class="breaking-bar" hidden>
-    <div class="breaking-inner">
-      <span class="breaking-label">ÚLTIMA HORA</span>
-      <button id="breakingText" class="breaking-text" type="button"></button>
-      <button id="breakingClose" class="breaking-close" type="button" aria-label="Cerrar">×</button>
+  <div id="newsTicker" class="news-ticker" hidden>
+    <div class="ticker-label">NOTICIAS</div>
+    <div class="ticker-viewport">
+      <div id="tickerTrack" class="ticker-track"></div>
     </div>
+    <button id="tickerPause" class="ticker-pause" type="button" aria-label="Pausar scroll">Ⅱ</button>
   </div>
 
 
@@ -132,15 +132,6 @@
         </div>
       </section>
       <audio id="radioAudio" preload="none"></audio>
-      <section class="song-history glass">
-        <div class="song-history-head">
-          <div><small>RECIENTES</small><h2>Últimas canciones</h2></div>
-          <span id="songHistoryCount">0</span>
-        </div>
-        <div id="songHistory" class="song-history-list">
-          <p class="muted">Esperando metadatos de la emisora...</p>
-        </div>
-      </section>
 
     </section>
 

@@ -59,11 +59,6 @@
             <small>LOGO</small><strong>Logo de la app</strong>
             <input id="logo" type="text" placeholder="/assets/uploads/logo/...">
             <div class="upload-row"><input id="logoFile" type="file" accept="image/*"><button class="secondary" id="uploadLogoBtn" type="button">Subir logo</button></div>
-        <div class="admin-separator"></div>
-        <h3>Última Hora</h3>
-        <label class="check"><input id="breakingEnabled" type="checkbox"> Activar franja de Última Hora</label>
-        <label>Titular urgente<input id="breakingTextAdmin" type="text" placeholder="Ej: Última hora: ..."></label>
-        <label>Noticia vinculada (ID, opcional)<input id="breakingNewsId" type="text" placeholder="news-..."></label>
 
           </div>
         </section>
@@ -89,6 +84,22 @@
         </section>
 
         <section class="panel" data-panel="news">
+          <div class="ticker-admin-box">
+            <small>SCROLL DE NOTICIAS</small>
+            <h3>Barra informativa</h3>
+            <div class="grid two">
+              <label class="check">
+                <input id="tickerEnabled" type="checkbox"> Mostrar scroll de noticias
+              </label>
+              <label>Máximo de noticias
+                <input id="tickerMaxItems" type="number" min="1" max="10" step="1" value="10">
+              </label>
+            </div>
+            <label>Duración de una vuelta completa (minutos)
+              <input id="tickerMinutes" type="number" min="0.5" max="20" step="0.5" value="7">
+            </label>
+            <p class="admin-help">Menos minutos = más rápido. Más minutos = más lento. Por defecto: 7 minutos.</p>
+          </div>
           <div class="rollup-admin-box">
             <small>DESTACADAS · ROLL-UP</small>
             <div class="grid two">

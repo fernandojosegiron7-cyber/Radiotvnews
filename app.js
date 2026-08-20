@@ -103,29 +103,6 @@
   setText("#tvName",cfg.tv?.name||"TV en vivo");
   setText("#radioStationName",cfg.radio?.name||cfg.stationName||"Radio");
 
-  function initBreakingNews(){
-    const bar=$("#breakingBar");
-    const text=$("#breakingText");
-    const close=$("#breakingClose");
-    const data=cfg.breakingNews||{};
-    if(!bar||!text||!data.enabled||!String(data.text||"").trim()) return;
-
-    bar.hidden=false;
-    text.textContent=data.text;
-
-    text.onclick=()=>{
-      if(data.newsId && allNews?.some?.(n=>n.id===data.newsId)){
-        openNews(data.newsId);
-      }else{
-        go("news");
-      }
-    };
-
-    if(close){
-      close.onclick=()=>bar.classList.add("breaking-hide");
-    }
-  }
-
   // El logo cargado desde Admin también es el favicon de la web.
   const currentLogo=liveAsset(cfg.logo||"");
   if(currentLogo){
@@ -170,16 +147,51 @@
     more:$("#moreView")
   };
 
-  function go(name){
+  async function go(name){
     Object.entries(views).forEach(([key,view])=>{
-      if(view) view.classList.toggle("active", key===name);
+      if(view) view.classList.toggle("active",key===name);
     });
 
     $$(".nav button").forEach(btn=>{
-      btn.classList.toggle("active", btn.dataset.go===name);
+      btn.classList.toggle("active",btn.dataset.go===name);
     });
 
     window.scrollTo({top:0,behavior:"smooth"});
+
+    try{
+      if(name==="radio"){
+        if(video && !video.paused) video.pause();
+
+        if(audio && radioUrl){
+          setText("#radioConnection","CONECTANDO");
+          await audio.play();
+          radioUI(true);
+        }
+      }else if(name==="tv"){
+        if(audio && !audio.paused){
+          audio.pause();
+          radioUI(false);
+        }
+
+        if(video && tvUrl){
+          if(tvSignalStatus) tvSignalStatus.textContent="Cargando señal...";
+          await video.play();
+        }
+      }else{
+        if(video && !video.paused) video.pause();
+      }
+    }catch(e){
+      console.warn("Inicio automático bloqueado o señal no disponible:",e);
+
+      if(name==="radio"){
+        setText("#radioConnection","LISTA");
+        toast("Toca Play si el navegador bloquea la reproducción automática");
+      }
+
+      if(name==="tv" && tvSignalStatus){
+        tvSignalStatus.textContent="Toca Play para iniciar";
+      }
+    }
   }
 
   $$("[data-go]").forEach(btn=>{
@@ -333,6 +345,66 @@
       prompt("Copia este enlace",url);
     }
   };
+
+
+  // Scroll de noticias administrable
+  let tickerPaused=false;
+
+  function initNewsTicker(){
+    const wrapper=$("#newsTicker");
+    const track=$("#tickerTrack");
+    const pauseBtn=$("#tickerPause");
+    const tickerCfg=cfg.newsTicker||{};
+
+    if(!wrapper||!track||!tickerCfg.enabled){
+      if(wrapper) wrapper.hidden=true;
+      return;
+    }
+
+    const maxItems=Math.min(10,Math.max(1,Number(tickerCfg.maxItems||10)));
+    const tickerNews=allNews.filter(n=>n.ticker).slice(0,maxItems);
+
+    if(!tickerNews.length){
+      wrapper.hidden=true;
+      return;
+    }
+
+    const minutes=Math.min(20,Math.max(.5,Number(tickerCfg.minutes||7)));
+    const duration=Math.round(minutes*60);
+
+    const group=tickerNews.map((n,i)=>`
+      <button class="ticker-item" type="button" data-ticker-id="${esc(n.id)}">
+        <span class="ticker-number">${String(i+1).padStart(2,"0")}</span>
+        <span class="ticker-category">${esc(n.category||"Noticias")}</span>
+        <strong>${esc(n.title||"")}</strong>
+        <span class="ticker-separator">✦</span>
+      </button>
+    `).join("");
+
+    // Se duplica el grupo para crear un movimiento continuo sin salto.
+    track.innerHTML=`
+      <div class="ticker-group">${group}</div>
+      <div class="ticker-group" aria-hidden="true">${group}</div>
+    `;
+    track.style.setProperty("--ticker-duration",`${duration}s`);
+    wrapper.hidden=false;
+
+    $$("[data-ticker-id]").forEach(btn=>{
+      btn.onclick=()=>{
+        const id=btn.dataset.tickerId;
+        if(id) openNews(id);
+      };
+    });
+
+    if(pauseBtn){
+      pauseBtn.onclick=()=>{
+        tickerPaused=!tickerPaused;
+        track.classList.toggle("paused",tickerPaused);
+        pauseBtn.textContent=tickerPaused?"▶":"Ⅱ";
+        pauseBtn.setAttribute("aria-label",tickerPaused?"Reanudar scroll":"Pausar scroll");
+      };
+    }
+  }
 
   // Noticias destacadas tipo ROLL-UP
   const featuredMarked=allNews.filter(n=>n.featured);
@@ -527,6 +599,7 @@
   }
 
   renderNewsPage();
+  initNewsTicker();
 
   const newsSearch=$("#newsSearch");
   const clearNewsSearch=$("#clearNewsSearch");
@@ -545,7 +618,6 @@
       renderNewsPage();
     };
   }
-  initBreakingNews();
 
   const deepLinkedNews=newsIdFromHash();
   if(deepLinkedNews && allNews.some(n=>n.id===deepLinkedNews)) openNews(deepLinkedNews);
@@ -629,55 +701,9 @@
     };
   }
 
-  const songHistoryItems=[];
-
-  function renderSongHistory(){
-    const box=$("#songHistory");
-    const count=$("#songHistoryCount");
-    if(count) count.textContent=String(songHistoryItems.length);
-    if(!box) return;
-
-    if(!songHistoryItems.length){
-      box.innerHTML='<p class="muted">Esperando metadatos de la emisora...</p>';
-      return;
-    }
-
-    box.innerHTML=songHistoryItems.map((item,i)=>`
-      <article class="song-history-item">
-        <span class="song-number">${String(i+1).padStart(2,"0")}</span>
-        <div>
-          <strong>${esc(item.title||"En vivo")}</strong>
-          <small>${esc(item.artist||cfg.stationName||"")}</small>
-        </div>
-        <time>${esc(item.time||"")}</time>
-      </article>
-    `).join("");
-  }
-
-  function rememberSong(title,artist){
-    const t=String(title||"").trim();
-    const a=String(artist||"").trim();
-    if(!t || /listo para reproducir|en vivo/i.test(t)) return;
-
-    const key=`${a}__${t}`.toLowerCase();
-    if(songHistoryItems[0]?.key===key) return;
-
-    const now=new Date();
-    songHistoryItems.unshift({
-      key,
-      title:t,
-      artist:a,
-      time:now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
-    });
-
-    if(songHistoryItems.length>8) songHistoryItems.length=8;
-    renderSongHistory();
-  }
-
   function applyMetadata(title,artist,artwork){
     const safeTitle=title||"En vivo";
     const safeArtist=artist||cfg.radio?.name||cfg.stationName||"";
-    rememberSong(safeTitle,safeArtist);
     const fixedLogo=liveAsset(cfg.logo||"");
 
     setText("#radioTitle",safeTitle);
