@@ -52,24 +52,14 @@
   ],
   "news": [
     {
-      "id": "bienvenida",
-      "date": "Hoy",
-      "category": "Emisora",
-      "title": "Bienvenido a la nueva PWA de Radio & TV",
-      "image": "",
-      "excerpt": "Radio, televisión, programación y noticias desde una sola aplicación.",
-      "body": "Desde el panel administrativo puedes cambiar el contenido, la programación, los streams, la apariencia y las noticias.",
-      "featured": true
-    },
-    {
       "id": "programacion",
       "date": "Hoy",
-      "category": "Programación",
-      "title": "Consulta la programación de la emisora",
-      "image": "",
-      "excerpt": "Revisa los programas y horarios disponibles.",
-      "body": "La programación se administra desde el panel privado y se guarda directamente en GitHub.",
-      "featured": false
+      "category": "Nacionales",
+      "title": "Capturan al tiktoker Urías Lobo tras polémico video que involucra a un menor",
+      "image": "/assets/uploads/news/1787253989145-2081fcd0.jpg",
+      "excerpt": "El creador de contenido Urías Lobo fue capturado en Danlí, El Paraíso, luego de una polémica generada por un video difundido en redes sociales en el que aparece un menor de edad.\n\nEl caso provocó críticas y la intervención de las autoridades, que iniciaron acciones legales para investigar lo ocurrido. Lobo quedó a disposición de la justicia mientras continúa el proceso correspondiente.",
+      "body": "El creador de contenido Urías Lobo fue capturado en Danlí, El Paraíso, tras la controversia generada por la difusión de un video en redes sociales en el que aparece involucrado un menor de edad.\n\nLas imágenes provocaron numerosas reacciones y cuestionamientos entre usuarios de redes sociales, lo que posteriormente motivó la intervención de las autoridades encargadas de investigar posibles vulneraciones a los derechos del menor.\n\nDe acuerdo con la información conocida sobre el caso, las autoridades iniciaron las diligencias correspondientes y posteriormente procedieron con la detención del creador de contenido, quien quedó a disposición de los organismos competentes.\n\nEl caso continuará bajo investigación y será el proceso judicial el que determine las responsabilidades correspondientes. Por tratarse de un menor de edad, su identidad debe mantenerse protegida durante la cobertura del caso.",
+      "featured": true
     }
   ]
 }
