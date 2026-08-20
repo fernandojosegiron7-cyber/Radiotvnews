@@ -56,6 +56,118 @@
     return raw;
   }
 
+
+  // Hora y clima en cabecera
+  function initTopClock(){
+    const el=$("#topClock");
+    if(!el) return;
+
+    const update=()=>{
+      const now=new Date();
+      el.textContent=now.toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit",
+        hour12:true
+      });
+    };
+
+    update();
+    setInterval(update,1000);
+  }
+
+  function weatherDescription(code){
+    const map={
+      0:["☀","Despejado"],
+      1:["🌤","Mayormente despejado"],
+      2:["⛅","Parcialmente nublado"],
+      3:["☁","Nublado"],
+      45:["🌫","Niebla"],
+      48:["🌫","Niebla"],
+      51:["🌦","Llovizna ligera"],
+      53:["🌦","Llovizna"],
+      55:["🌧","Llovizna fuerte"],
+      61:["🌦","Lluvia ligera"],
+      63:["🌧","Lluvia"],
+      65:["🌧","Lluvia fuerte"],
+      71:["🌨","Nieve ligera"],
+      73:["🌨","Nieve"],
+      75:["🌨","Nieve fuerte"],
+      80:["🌦","Chubascos"],
+      81:["🌧","Chubascos"],
+      82:["⛈","Chubascos fuertes"],
+      95:["⛈","Tormenta"],
+      96:["⛈","Tormenta con granizo"],
+      99:["⛈","Tormenta fuerte"]
+    };
+    return map[Number(code)]||["◌","Clima"];
+  }
+
+  async function loadWeather(force=false){
+    const temp=$("#weatherTemp");
+    const cond=$("#weatherCondition");
+    const icon=$("#weatherIcon");
+    const label=$("#weatherLabel");
+
+    if(!temp||!cond||!icon) return;
+
+    if(!("geolocation" in navigator)){
+      cond.textContent="No disponible";
+      return;
+    }
+
+    if(force){
+      cond.textContent="Actualizando...";
+      icon.textContent="◌";
+    }
+
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      try{
+        const {latitude,longitude}=pos.coords;
+        const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=celsius&timezone=auto`;
+        const r=await fetch(url,{cache:"no-store"});
+        if(!r.ok) throw new Error("weather");
+        const data=await r.json();
+        const current=data.current||{};
+        const [ico,text]=weatherDescription(current.weather_code);
+
+        icon.textContent=ico;
+        temp.textContent=Number.isFinite(Number(current.temperature_2m))
+          ? `${Math.round(Number(current.temperature_2m))}°`
+          : "--°";
+        cond.textContent=text;
+        if(label) label.textContent="CLIMA";
+        localStorage.setItem("weather-cache",JSON.stringify({
+          ts:Date.now(),
+          temp:temp.textContent,
+          cond:text,
+          icon:ico
+        }));
+      }catch(e){
+        cond.textContent="Sin conexión";
+      }
+    },err=>{
+      const cached=JSON.parse(localStorage.getItem("weather-cache")||"null");
+      if(cached && Date.now()-cached.ts<60*60*1000){
+        icon.textContent=cached.icon||"◌";
+        temp.textContent=cached.temp||"--°";
+        cond.textContent=cached.cond||"Clima";
+      }else{
+        cond.textContent="Permitir ubicación";
+        icon.textContent="⌖";
+      }
+    },{
+      enableHighAccuracy:false,
+      timeout:8000,
+      maximumAge:10*60*1000
+    });
+  }
+
+  initTopClock();
+  loadWeather(false);
+  setInterval(()=>loadWeather(false),10*60*1000);
+
+  $("#weatherInfo")?.addEventListener("click",()=>loadWeather(true));
+
   // Theme
   const saved = localStorage.getItem("fg-theme");
   let themeMode = saved || cfg.appearance?.defaultTheme || "auto";
@@ -361,47 +473,43 @@
       return;
     }
 
-    const maxItems=Math.min(10,Math.max(1,Number(tickerCfg.maxItems||10)));
-    const tickerNews=allNews.filter(n=>n.ticker).slice(0,maxItems);
+    const headlines=(Array.isArray(tickerCfg.headlines)?tickerCfg.headlines:[])
+      .filter(x=>x && x.enabled!==false && String(x.text||"").trim())
+      .slice(0,10);
 
-    if(!tickerNews.length){
+    if(!headlines.length){
       wrapper.hidden=true;
       return;
     }
 
-    const minutes=Math.min(20,Math.max(.5,Number(tickerCfg.minutes||7)));
+    const minutes=Math.min(20,Math.max(1,Number(tickerCfg.minutes||7)));
     const duration=Math.round(minutes*60);
 
-    const group=tickerNews.map((n,i)=>`
-      <button class="ticker-item" type="button" data-ticker-id="${esc(n.id)}">
+    const group=headlines.map((item,i)=>`
+      <span class="ticker-item">
         <span class="ticker-number">${String(i+1).padStart(2,"0")}</span>
-        <span class="ticker-category">${esc(n.category||"Noticias")}</span>
-        <strong>${esc(n.title||"")}</strong>
+        <strong>${esc(item.text)}</strong>
         <span class="ticker-separator">✦</span>
-      </button>
+      </span>
     `).join("");
 
-    // Se duplica el grupo para crear un movimiento continuo sin salto.
     track.innerHTML=`
       <div class="ticker-group">${group}</div>
       <div class="ticker-group" aria-hidden="true">${group}</div>
     `;
+
     track.style.setProperty("--ticker-duration",`${duration}s`);
     wrapper.hidden=false;
-
-    $$("[data-ticker-id]").forEach(btn=>{
-      btn.onclick=()=>{
-        const id=btn.dataset.tickerId;
-        if(id) openNews(id);
-      };
-    });
 
     if(pauseBtn){
       pauseBtn.onclick=()=>{
         tickerPaused=!tickerPaused;
         track.classList.toggle("paused",tickerPaused);
         pauseBtn.textContent=tickerPaused?"▶":"Ⅱ";
-        pauseBtn.setAttribute("aria-label",tickerPaused?"Reanudar scroll":"Pausar scroll");
+        pauseBtn.setAttribute(
+          "aria-label",
+          tickerPaused?"Reanudar scroll":"Pausar scroll"
+        );
       };
     }
   }

@@ -1,4 +1,4 @@
-const CACHE="radio-tv-pwa-v5-9-admin-separado";
+const CACHE="radio-tv-pwa-v6-1-hora-clima";
 const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./icons/icon.svg"];
 
 self.addEventListener("install",e=>{

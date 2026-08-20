@@ -10,7 +10,7 @@
 <body class="dashboard-page">
   <div id="dashboard">
     <header class="admin-top">
-      <div><small>PANEL ADMINISTRATIVO · GITHUB</small><strong id="adminStation">Radio & TV</strong></div>
+      <div><small>PANEL ADMINISTRATIVO</small><strong id="adminStation">Radio & TV</strong></div>
       <div class="top-actions"><a class="ghost" href="/" target="_blank">Ver app</a><button class="ghost" id="logoutBtn">Salir</button></div>
     </header>
 
@@ -28,7 +28,7 @@
       <section class="content">
         <div class="status-row">
           <div><small>ESTADO</small><strong id="saveStatus">Cargando...</strong></div>
-          <button id="saveBtn" class="primary">Guardar en GitHub</button>
+          <button id="saveBtn" class="primary">Guardar cambios</button>
         </div>
 
         <section class="panel active" data-panel="general">
@@ -73,28 +73,37 @@
         <section class="panel" data-panel="news">
           <div class="ticker-admin-box">
             <small>SCROLL DE NOTICIAS</small>
-            <h3>Barra informativa</h3>
+            <h3>Titulares manuales</h3>
+
             <div class="grid two">
               <label class="check">
-                <input id="tickerEnabled" type="checkbox"> Mostrar scroll de noticias
+                <input id="tickerEnabled" type="checkbox">
+                Mostrar scroll de noticias
               </label>
-              <label>Máximo de noticias
-                <input id="tickerMaxItems" type="number" min="1" max="10" step="1" value="10">
-              </label>
-            </div>
-            <label>Duración de una vuelta completa (minutos)
-              <input id="tickerMinutes" type="number" min="0.5" max="20" step="0.5" value="7">
-            </label>
-            <p class="admin-help">Menos minutos = más rápido. Más minutos = más lento. Por defecto: 7 minutos.</p>
-          </div>
-          <div class="rollup-admin-box">
-            <small>DESTACADAS · ROLL-UP</small>
-            <div class="grid two">
-              <label class="check"><input id="rollupEnabled" type="checkbox"> Rotación automática</label>
-              <label>Segundos por noticia
-                <input id="rollupSeconds" type="number" min="3" max="20" step="1" value="5">
+
+              <label>Duración de una vuelta completa
+                <select id="tickerMinutes">
+                  <option value="1">1 minuto</option>
+                  <option value="2">2 minutos</option>
+                  <option value="3">3 minutos</option>
+                  <option value="5">5 minutos</option>
+                  <option value="7">7 minutos</option>
+                  <option value="10">10 minutos</option>
+                  <option value="15">15 minutos</option>
+                  <option value="20">20 minutos</option>
+                </select>
               </label>
             </div>
+
+            <div class="ticker-editor-head">
+              <div>
+                <strong>Titulares del scroll</strong>
+                <small>Máximo 10 titulares. Son independientes de las noticias publicadas.</small>
+              </div>
+              <button id="addTickerHeadline" class="secondary" type="button">+ Titular</button>
+            </div>
+
+            <div id="tickerHeadlineEditor" class="ticker-headline-editor"></div>
           </div>
           <div class="panel-head with-action"><div><small>CONTENIDO</small><h2>Noticias</h2></div><button class="secondary" id="addNews">+ Noticia</button></div>
           <div id="newsEditor" class="repeat-list"></div>

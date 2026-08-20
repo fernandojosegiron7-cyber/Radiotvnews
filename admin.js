@@ -126,12 +126,12 @@
 
   $("#saveBtn").onclick=async()=>{
     read();
-    status("Guardando en GitHub...");
+    status("Guardando...");
     $("#saveBtn").disabled=true;
     try{
       const result=await api("/api/admin-config",{method:"POST",body:JSON.stringify({settings})});
       $("#adminStation").textContent=settings.stationName||"Radio & TV";
-      status("Guardado en GitHub");
+      status("Cambios guardados");
       toast(result.message||"Guardado");
     }catch(err){status("Error");toast(err.message)}
     finally{$("#saveBtn").disabled=false}
