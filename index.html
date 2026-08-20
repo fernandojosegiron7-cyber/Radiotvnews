@@ -8,7 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="RadioTV">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link id="favicon" rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link id="appleTouchIcon" rel="apple-touch-icon" href="icons/icon.svg">
   <link rel="stylesheet" href="styles.css">
   <title>Radio & TV</title>
 </head>
@@ -44,7 +45,7 @@
         <div class="signal-orbit" aria-hidden="true">
           <div class="orbit-ring ring-a"></div>
           <div class="orbit-ring ring-b"></div>
-          <div class="orbit-core">RT</div>
+          <div class="orbit-core" id="heroLogo">RT</div>
         </div>
       </div>
 
@@ -150,10 +151,6 @@
         <div><small>EMISORA</small><h1>Más</h1></div>
       </div>
       <div class="more">
-        <div class="card glass">
-          <small>PWA</small><h3>Instalable</h3>
-          <p>Instala la radio en tu teléfono o computadora y úsala como una aplicación.</p>
-        </div>
         <div class="card glass">
           <small>REDES</small><h3>Síguenos</h3><div id="socialLinks" class="socials"></div>
         </div>

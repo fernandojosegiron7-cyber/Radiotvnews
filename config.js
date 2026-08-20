@@ -2,9 +2,9 @@ window.APP_CONFIG = {
   "stationName": "Balance Informativo",
   "shortName": "Balance Radio TV",
   "slogan": "Radio, TV y noticias en un solo lugar",
-  "logo": "/assets/uploads/logo/1787252043839-9681aeb0.jpg",
-  "accent": "#6d5ef9",
-  "accent2": "#14b8a6",
+  "logo": "/assets/uploads/logo/1787259698749-91e709c3.png",
+  "accent": "#ff8800",
+  "accent2": "#ff0000",
   "appearance": {
     "defaultTheme": "auto",
     "darkBackground": "",
@@ -13,8 +13,7 @@ window.APP_CONFIG = {
   "radio": {
     "name": "Radio en vivo",
     "streamUrl": "https://stream.zeno.fm/stm76db4tk8uv",
-    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv",
-    "fallbackArtwork": "https://ibb.co/1YK0gnM8"
+    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv"
   },
   "tv": {
     "name": "TV en vivo",

@@ -60,7 +60,6 @@
     $("#radioName").value=settings.radio?.name||"";
     $("#radioStream").value=settings.radio?.streamUrl||"";
     $("#metadataUrl").value=settings.radio?.metadataUrl||"";
-    $("#radioArtwork").value=settings.radio?.fallbackArtwork||"";
 
     $("#tvNameInput").value=settings.tv?.name||"";
     $("#tvStream").value=settings.tv?.streamUrl||"";
@@ -84,7 +83,7 @@
     settings.accent2=$("#accent2").value;
     settings.logo=$("#logo").value.trim();
 
-    settings.radio={name:$("#radioName").value.trim(),streamUrl:$("#radioStream").value.trim(),metadataUrl:$("#metadataUrl").value.trim(),fallbackArtwork:$("#radioArtwork").value.trim()};
+    settings.radio={name:$("#radioName").value.trim(),streamUrl:$("#radioStream").value.trim(),metadataUrl:$("#metadataUrl").value.trim()};
     settings.tv={name:$("#tvNameInput").value.trim(),streamUrl:$("#tvStream").value.trim(),poster:$("#tvPoster").value.trim()};
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};
     settings.socials={};
@@ -190,7 +189,6 @@
   }
 
   $("#uploadLogoBtn").onclick=()=>bindUpload("#logoFile","#logo","logo");
-  $("#uploadRadioArtworkBtn").onclick=()=>bindUpload("#radioArtworkFile","#radioArtwork","radio");
   $("#uploadTvPosterBtn").onclick=()=>bindUpload("#tvPosterFile","#tvPoster","tv");
   $("#uploadDarkBgBtn").onclick=()=>bindUpload("#darkBackgroundFile","#darkBackground","background");
   $("#uploadLightBgBtn").onclick=()=>bindUpload("#lightBackgroundFile","#lightBackground","background");

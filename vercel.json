@@ -26,6 +26,15 @@
           "value": "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0"
         }
       ]
+    },
+    {
+      "source": "/api/public-asset",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, s-maxage=300"
+        }
+      ]
     }
   ]
 }

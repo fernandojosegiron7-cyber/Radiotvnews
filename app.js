@@ -35,6 +35,15 @@
   const esc = s => String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
   const setText = (sel,val) => { const el=$(sel); if(el) el.textContent=val; };
 
+  function liveAsset(value=""){
+    const raw=String(value||"").trim();
+    if(!raw) return "";
+    if(raw.startsWith("/assets/uploads/")){
+      return `/api/public-asset?path=${encodeURIComponent(raw.slice(1))}`;
+    }
+    return raw;
+  }
+
   // Theme
   const saved = localStorage.getItem("fg-theme");
   let themeMode = saved || cfg.appearance?.defaultTheme || "auto";
@@ -52,7 +61,7 @@
 
     const bg = t==="light" ? cfg.appearance?.lightBackground : cfg.appearance?.darkBackground;
     const appBg=$("#appBackground");
-    if(appBg) appBg.style.backgroundImage = bg ? `url("${bg}")` : "";
+    if(appBg) appBg.style.backgroundImage = bg ? `url("${liveAsset(bg)}")` : "";
 
     const btn=$("#themeBtn");
     if(btn){
@@ -82,12 +91,39 @@
   setText("#tvName",cfg.tv?.name||"TV en vivo");
   setText("#radioStationName",cfg.radio?.name||cfg.stationName||"Radio");
 
+  // El logo cargado desde Admin también es el favicon de la web.
+  const currentLogo=liveAsset(cfg.logo||"");
+  if(currentLogo){
+    const bust=currentLogo+(currentLogo.includes("?")?"&":"?")+"v="+Date.now();
+    const fav=$("#favicon");
+    const apple=$("#appleTouchIcon");
+    if(fav){
+      fav.href=bust;
+      fav.type="";
+    }
+    if(apple) apple.href=bust;
+  }
+
+  // La Radio siempre muestra el logo principal, nunca una carátula distinta.
+  const radioLogo=$("#radioArtwork");
+  if(radioLogo && currentLogo){
+    radioLogo.innerHTML=`<img src="${esc(currentLogo)}" alt="Logo de la emisora">`;
+  }
+
   if(cfg.logo){
+    const logoSrc=liveAsset(cfg.logo);
+
     const img=new Image();
-    img.src=cfg.logo;
+    img.src=logoSrc;
     img.alt="Logo";
     const brand=$("#brandLogo");
     if(brand) brand.replaceChildren(img);
+
+    const heroImg=new Image();
+    heroImg.src=logoSrc;
+    heroImg.alt="Logo";
+    const heroLogo=$("#heroLogo");
+    if(heroLogo) heroLogo.replaceChildren(heroImg);
   }
 
   // Navigation
@@ -132,7 +168,7 @@
 
   function newsCard(n){
     return `<article data-news-id="${esc(n.id)}">
-      <div class="newsimg">${n.image?`<img src="${esc(n.image)}" alt="">`:"▣"}</div>
+      <div class="newsimg">${n.image?`<img src="${esc(liveAsset(n.image))}" alt="">`:"▣"}</div>
       <div class="newsbody">
         <span class="news-category">${esc(n.category||"Noticias")}</span>
         <h3>${esc(n.title)}</h3>
@@ -158,7 +194,7 @@
     const img=$("#dialogImage");
     if(img){
       img.hidden=!n.image;
-      if(n.image) img.src=n.image;
+      if(n.image) img.src=liveAsset(n.image);
     }
 
     const dialog=$("#newsDialog");
@@ -168,29 +204,161 @@
   const closeNews=$("#closeNews");
   if(closeNews) closeNews.onclick=()=>$("#newsDialog")?.close();
 
-  const featured=allNews.filter(n=>n.featured);
-  const hero=featured[0]||allNews[0];
-  const secondary=featured[1]||allNews[1];
-  const featuredNews=$("#featuredNews");
+  // Noticias destacadas tipo ROLL-UP
+  const featuredMarked=allNews.filter(n=>n.featured);
+  const featuredPool=[
+    ...featuredMarked,
+    ...allNews.filter(n=>!n.featured)
+  ].filter((n,i,arr)=>arr.findIndex(x=>x.id===n.id)===i).slice(0,6);
 
-  if(featuredNews){
-    featuredNews.innerHTML=hero ? `
-      <article class="featured-main" data-news-id="${esc(hero.id)}">
-        <div class="news-bg" style="${hero.image?`background-image:url('${esc(hero.image)}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
-        <div class="news-content">
-          <span class="news-category">${esc(hero.category||"Noticias")}</span>
-          <h3>${esc(hero.title)}</h3>
-          <small>${esc(hero.date||"")}</small>
+  const featuredNews=$("#featuredNews");
+  let featuredIndex=0;
+  let featuredTimer=null;
+  let rollupBusy=false;
+
+  function featuredSlideMarkup(n){
+    if(!n) return "";
+    const image=n.image ? liveAsset(n.image) : "";
+    return `
+      <article class="rollup-slide" data-news-id="${esc(n.id)}">
+        <div class="rollup-bg" style="${image?`background-image:url('${esc(image)}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
+        <div class="rollup-shade"></div>
+        <div class="rollup-content">
+          <div class="rollup-top">
+            <span class="news-category">${esc(n.category||"Noticias")}</span>
+            <small>${esc(n.date||"")}</small>
+          </div>
+          <h3>${esc(n.title||"")}</h3>
+          <p>${esc(n.excerpt||"")}</p>
+          <span class="rollup-read">Leer noticia →</span>
         </div>
-      </article>
-      ${secondary?`
-        <article class="featured-side" data-news-id="${esc(secondary.id)}">
-          <span class="news-category">${esc(secondary.category||"Noticias")}</span>
-          <h3>${esc(secondary.title)}</h3>
-          <p>${esc(secondary.excerpt||"")}</p>
-          <small>${esc(secondary.date||"")}</small>
-        </article>`:""}
-    ` : "<p>Sin noticias destacadas.</p>";
+      </article>`;
+  }
+
+  function renderFeaturedRollup(){
+    if(!featuredNews) return;
+
+    if(!featuredPool.length){
+      featuredNews.innerHTML="<p>Sin noticias destacadas.</p>";
+      return;
+    }
+
+    featuredNews.innerHTML=`
+      <div class="rollup-shell">
+        <div class="rollup-viewport">
+          <div id="rollupTrack" class="rollup-track">
+            ${featuredSlideMarkup(featuredPool[featuredIndex])}
+          </div>
+        </div>
+
+        ${featuredPool.length>1 ? `
+          <div class="rollup-controls">
+            <button id="rollupPrev" class="rollup-arrow" aria-label="Noticia anterior">‹</button>
+            <div id="rollupDots" class="rollup-dots">
+              ${featuredPool.map((_,i)=>`<button class="${i===featuredIndex?"active":""}" data-rollup-index="${i}" aria-label="Ir a noticia ${i+1}"></button>`).join("")}
+            </div>
+            <button id="rollupNext" class="rollup-arrow" aria-label="Siguiente noticia">›</button>
+          </div>` : ""}
+      </div>`;
+
+    bindRollupClicks();
+  }
+
+  function updateRollupDots(){
+    $$("#rollupDots button").forEach((dot,i)=>dot.classList.toggle("active",i===featuredIndex));
+  }
+
+  function changeFeatured(nextIndex,direction=1){
+    if(!featuredNews || featuredPool.length<2 || rollupBusy) return;
+
+    const track=$("#rollupTrack");
+    const current=track?.querySelector(".rollup-slide");
+    if(!track || !current) return;
+
+    rollupBusy=true;
+    nextIndex=(nextIndex+featuredPool.length)%featuredPool.length;
+
+    const incomingWrap=document.createElement("div");
+    incomingWrap.innerHTML=featuredSlideMarkup(featuredPool[nextIndex]);
+    const incoming=incomingWrap.firstElementChild;
+
+    incoming.classList.add(direction>=0?"rollup-enter-bottom":"rollup-enter-top");
+    track.appendChild(incoming);
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        current.classList.add(direction>=0?"rollup-exit-top":"rollup-exit-bottom");
+        incoming.classList.remove("rollup-enter-bottom","rollup-enter-top");
+        incoming.classList.add("rollup-active");
+      });
+    });
+
+    setTimeout(()=>{
+      current.remove();
+      incoming.classList.remove("rollup-active");
+      featuredIndex=nextIndex;
+      updateRollupDots();
+      bindRollupClicks();
+      rollupBusy=false;
+    },520);
+  }
+
+  function resetFeaturedTimer(){
+    if(featuredTimer) clearInterval(featuredTimer);
+    if(featuredPool.length>1){
+      featuredTimer=setInterval(()=>changeFeatured(featuredIndex+1,1),5000);
+    }
+  }
+
+  function bindRollupClicks(){
+    $$("#featuredNews [data-news-id]").forEach(el=>{
+      el.onclick=()=>openNews(el.dataset.newsId);
+    });
+
+    const prev=$("#rollupPrev");
+    const next=$("#rollupNext");
+    if(prev) prev.onclick=e=>{e.stopPropagation();changeFeatured(featuredIndex-1,-1);resetFeaturedTimer()};
+    if(next) next.onclick=e=>{e.stopPropagation();changeFeatured(featuredIndex+1,1);resetFeaturedTimer()};
+
+    $$("#rollupDots button").forEach(dot=>{
+      dot.onclick=e=>{
+        e.stopPropagation();
+        const target=Number(dot.dataset.rollupIndex);
+        if(Number.isFinite(target) && target!==featuredIndex){
+          changeFeatured(target,target>featuredIndex?1:-1);
+          resetFeaturedTimer();
+        }
+      };
+    });
+  }
+
+  renderFeaturedRollup();
+  resetFeaturedTimer();
+
+  // Swipe vertical para celular
+  let rollupTouchY=null;
+  if(featuredNews){
+    featuredNews.addEventListener("touchstart",e=>{
+      rollupTouchY=e.touches?.[0]?.clientY ?? null;
+    },{passive:true});
+
+    featuredNews.addEventListener("touchend",e=>{
+      if(rollupTouchY===null || featuredPool.length<2) return;
+      const endY=e.changedTouches?.[0]?.clientY;
+      if(endY===undefined) return;
+
+      const delta=endY-rollupTouchY;
+      rollupTouchY=null;
+
+      if(Math.abs(delta)>45){
+        if(delta<0) changeFeatured(featuredIndex+1,1);
+        else changeFeatured(featuredIndex-1,-1);
+        resetFeaturedTimer();
+      }
+    },{passive:true});
+
+    featuredNews.addEventListener("mouseenter",()=>featuredTimer&&clearInterval(featuredTimer));
+    featuredNews.addEventListener("mouseleave",resetFeaturedTimer);
   }
 
   const homeNews=$("#homeNewsGrid");
@@ -211,7 +379,7 @@
     if(heroBox){
       heroBox.innerHTML=h ? `
         <article class="news-hero-card" data-news-id="${esc(h.id)}">
-          <div class="bg" style="${h.image?`background-image:url('${esc(h.image)}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
+          <div class="bg" style="${h.image?`background-image:url('${esc(liveAsset(h.image))}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
           <div class="content">
             <span class="news-category">${esc(h.category||"Noticias")}</span>
             <h2>${esc(h.title)}</h2>
@@ -309,13 +477,15 @@
   function applyMetadata(title,artist,artwork){
     const safeTitle=title||"En vivo";
     const safeArtist=artist||cfg.radio?.name||cfg.stationName||"";
+    const fixedLogo=liveAsset(cfg.logo||"");
 
     setText("#radioTitle",safeTitle);
     setText("#radioArtist",safeArtist);
 
-    if(artwork){
-      const art=$("#radioArtwork");
-      if(art) art.innerHTML=`<img src="${esc(artwork)}" alt="">`;
+    const art=$("#radioArtwork");
+    if(art){
+      if(fixedLogo) art.innerHTML=`<img src="${esc(fixedLogo)}" alt="Logo de la emisora">`;
+      else art.textContent="♪";
     }
 
     if("mediaSession" in navigator){
@@ -324,7 +494,7 @@
           title:safeTitle,
           artist:safeArtist,
           album:cfg.stationName||"",
-          artwork:artwork?[{src:artwork}]:[]
+          artwork:fixedLogo?[{src:fixedLogo}]:[]
         });
       }catch{}
     }
@@ -354,7 +524,7 @@
       return {
         title:data.title||data.track?.title||split.title,
         artist:data.artist||data.track?.artist||split.artist,
-        artwork:data.artwork||data.cover||data.track?.artwork||cfg.radio?.fallbackArtwork||""
+        artwork:data.artwork||data.cover||data.track?.artwork||cfg.logo||""
       };
     }
 
@@ -364,7 +534,7 @@
       return {
         title:title||"En vivo",
         artist:artist||cfg.radio?.name||cfg.stationName||"",
-        artwork:data.artwork||data.cover||data.track?.artwork||cfg.radio?.fallbackArtwork||""
+        artwork:data.artwork||data.cover||data.track?.artwork||cfg.logo||""
       };
     }
     return null;
@@ -412,10 +582,7 @@
       console.warn("Metadata JSON",e);
     }
   }
-
-  if(cfg.radio?.fallbackArtwork){
-    applyMetadata("Listo para reproducir",cfg.radio?.name||cfg.stationName||"",cfg.radio.fallbackArtwork);
-  }
+  applyMetadata("Listo para reproducir",cfg.radio?.name||cfg.stationName||"",cfg.logo||"");
 
   const metadataUrl=String(cfg.radio?.metadataUrl||"").trim();
   const zenoSSE=connectZenoMetadata(metadataUrl);
@@ -431,7 +598,7 @@
   const video=$("#tvVideo");
   const tvUrl=cfg.tv?.streamUrl||"";
 
-  if(video&&cfg.tv?.poster) video.poster=cfg.tv.poster;
+  if(video&&cfg.tv?.poster) video.poster=liveAsset(cfg.tv.poster);
 
   if(video&&tvUrl){
     const empty=$("#tvEmpty");
