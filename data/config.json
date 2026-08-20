@@ -12,9 +12,9 @@
   },
   "radio": {
     "name": "Radio en vivo",
-    "streamUrl": "",
+    "streamUrl": "https://stream.zeno.fm/stm76db4tk8uv.m3u",
     "metadataUrl": "",
-    "fallbackArtwork": ""
+    "fallbackArtwork": "https://ibb.co/1YK0gnM8"
   },
   "tv": {
     "name": "TV en vivo",
