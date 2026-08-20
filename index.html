@@ -112,8 +112,7 @@
           <span>🔊</span>
         </div>
 
-        <div class="radio-info-grid">
-          <div><small>EMISORA</small><strong id="radioStationName">Radio</strong>
+        
         <div class="onair-program" id="onAirProgram">
           <span class="onair-dot"></span>
           <div>
@@ -125,11 +124,24 @@
             <small>SIGUE</small>
             <span id="nextProgram">—</span>
           </div>
-        </div></div>
+        </div>
+
+        <div class="radio-info-grid">
+          <div><small>EMISORA</small><strong id="radioStationName">Radio</strong></div>
           <div><small>ESTADO</small><strong id="radioState">Disponible</strong></div>
         </div>
       </section>
       <audio id="radioAudio" preload="none"></audio>
+      <section class="song-history glass">
+        <div class="song-history-head">
+          <div><small>RECIENTES</small><h2>Últimas canciones</h2></div>
+          <span id="songHistoryCount">0</span>
+        </div>
+        <div id="songHistory" class="song-history-list">
+          <p class="muted">Esperando metadatos de la emisora...</p>
+        </div>
+      </section>
+
     </section>
 
     <section id="tvView" class="view">
@@ -149,7 +161,11 @@
         </div>
         <div class="tvmeta">
           <span class="live"><i></i> EN VIVO</span>
-          <div><h2 id="tvName">TV en vivo</h2><p>Señal oficial de la emisora</p></div>
+          <div class="tvmeta-copy"><h2 id="tvName">TV en vivo</h2><p id="tvSignalStatus">Señal lista</p></div>
+          <div class="tv-tools">
+            <button id="tvPip" type="button">PiP</button>
+            <button id="tvFullscreen" type="button">Pantalla completa</button>
+          </div>
         </div>
       </div>
     </section>
@@ -158,6 +174,13 @@
       <div class="title">
         <button data-go="home">‹</button>
         <div><small>INFORMACIÓN</small><h1>Noticias</h1></div>
+      </div>
+      <div class="news-tools">
+        <div class="news-search">
+          <span>⌕</span>
+          <input id="newsSearch" type="search" placeholder="Buscar noticias..." autocomplete="off">
+          <button id="clearNewsSearch" type="button" aria-label="Limpiar búsqueda">×</button>
+        </div>
       </div>
       <div id="newsCategories" class="category-strip"></div>
       <div id="newsHero"></div>

@@ -446,3 +446,154 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   }
   #newsDialog.news-dialog-open{transform:translateY(0) scale(1)}
 }
+
+
+/* ===== v5.6 MEJORAS ===== */
+.news-tools{
+  margin:0 0 14px;
+}
+.news-search{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--panel);
+}
+.news-search span{
+  font-size:20px;
+  color:var(--muted);
+}
+.news-search input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+}
+.news-search button{
+  width:28px;
+  height:28px;
+  border:0;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--panel) 70%,var(--text) 8%);
+  color:var(--muted);
+}
+
+.song-history{
+  margin-top:18px;
+  padding:18px;
+}
+.song-history-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:10px;
+}
+.song-history-head small{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.song-history-head h2{
+  margin:3px 0 0;
+}
+.song-history-head>span{
+  display:grid;
+  place-items:center;
+  min-width:32px;
+  height:32px;
+  padding:0 9px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+}
+.song-history-list{
+  display:grid;
+  gap:8px;
+}
+.song-history-item{
+  display:grid;
+  grid-template-columns:34px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:color-mix(in srgb,var(--panel) 88%,transparent);
+}
+.song-history-item strong,
+.song-history-item small{
+  display:block;
+}
+.song-history-item small,
+.song-history-item time,
+.muted{
+  color:var(--muted);
+  font-size:11px;
+}
+.song-number{
+  font-size:11px;
+  font-weight:900;
+  color:var(--accent);
+}
+
+.tvmeta{
+  gap:12px;
+}
+.tvmeta-copy{
+  flex:1;
+}
+.tv-tools{
+  display:flex;
+  gap:8px;
+  margin-left:auto;
+}
+.tv-tools button{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:9px 11px;
+  background:var(--panel);
+  color:var(--text);
+  font-weight:750;
+  font-size:11px;
+}
+.rollup-admin-box{
+  margin-bottom:18px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.rollup-admin-box>small{
+  display:block;
+  margin-bottom:10px;
+  color:var(--muted);
+  font-weight:900;
+  letter-spacing:.7px;
+}
+
+@media(max-width:680px){
+  .tvmeta{
+    flex-wrap:wrap;
+  }
+  .tv-tools{
+    width:100%;
+    margin-left:0;
+  }
+  .tv-tools button{
+    flex:1;
+  }
+  .song-history{
+    padding:14px;
+  }
+  .song-history-item{
+    grid-template-columns:28px 1fr;
+  }
+  .song-history-item time{
+    grid-column:2;
+  }
+}

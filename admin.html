@@ -89,6 +89,15 @@
         </section>
 
         <section class="panel" data-panel="news">
+          <div class="rollup-admin-box">
+            <small>DESTACADAS · ROLL-UP</small>
+            <div class="grid two">
+              <label class="check"><input id="rollupEnabled" type="checkbox"> Rotación automática</label>
+              <label>Segundos por noticia
+                <input id="rollupSeconds" type="number" min="3" max="20" step="1" value="5">
+              </label>
+            </div>
+          </div>
           <div class="panel-head with-action"><div><small>CONTENIDO</small><h2>Noticias</h2></div><button class="secondary" id="addNews">+ Noticia</button></div>
           <div id="newsEditor" class="repeat-list"></div>
         </section>

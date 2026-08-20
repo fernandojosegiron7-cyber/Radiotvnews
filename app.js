@@ -240,6 +240,7 @@
   // News
   const allNews=(cfg.news||[]).map((n,i)=>({...n,id:n.id||`news-${i}`}));
   let currentCategory="Todas";
+  let newsSearchTerm="";
 
   function newsCard(n){
     return `<article data-news-id="${esc(n.id)}">
@@ -435,7 +436,10 @@
   function resetFeaturedTimer(){
     if(featuredTimer) clearInterval(featuredTimer);
     if(featuredPool.length>1){
-      featuredTimer=setInterval(()=>changeFeatured(featuredIndex+1,1),5000);
+      if(cfg.featuredRollup?.enabled!==false){
+        const ms=Math.min(20,Math.max(3,Number(cfg.featuredRollup?.seconds||5)))*1000;
+        featuredTimer=setInterval(()=>changeFeatured(featuredIndex+1,1),ms);
+      }
     }
   }
 
@@ -523,6 +527,24 @@
   }
 
   renderNewsPage();
+
+  const newsSearch=$("#newsSearch");
+  const clearNewsSearch=$("#clearNewsSearch");
+
+  if(newsSearch){
+    newsSearch.oninput=e=>{
+      newsSearchTerm=String(e.target.value||"").trim();
+      renderNewsPage();
+    };
+  }
+
+  if(clearNewsSearch){
+    clearNewsSearch.onclick=()=>{
+      newsSearchTerm="";
+      if(newsSearch) newsSearch.value="";
+      renderNewsPage();
+    };
+  }
   initBreakingNews();
 
   const deepLinkedNews=newsIdFromHash();
@@ -607,9 +629,55 @@
     };
   }
 
+  const songHistoryItems=[];
+
+  function renderSongHistory(){
+    const box=$("#songHistory");
+    const count=$("#songHistoryCount");
+    if(count) count.textContent=String(songHistoryItems.length);
+    if(!box) return;
+
+    if(!songHistoryItems.length){
+      box.innerHTML='<p class="muted">Esperando metadatos de la emisora...</p>';
+      return;
+    }
+
+    box.innerHTML=songHistoryItems.map((item,i)=>`
+      <article class="song-history-item">
+        <span class="song-number">${String(i+1).padStart(2,"0")}</span>
+        <div>
+          <strong>${esc(item.title||"En vivo")}</strong>
+          <small>${esc(item.artist||cfg.stationName||"")}</small>
+        </div>
+        <time>${esc(item.time||"")}</time>
+      </article>
+    `).join("");
+  }
+
+  function rememberSong(title,artist){
+    const t=String(title||"").trim();
+    const a=String(artist||"").trim();
+    if(!t || /listo para reproducir|en vivo/i.test(t)) return;
+
+    const key=`${a}__${t}`.toLowerCase();
+    if(songHistoryItems[0]?.key===key) return;
+
+    const now=new Date();
+    songHistoryItems.unshift({
+      key,
+      title:t,
+      artist:a,
+      time:now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})
+    });
+
+    if(songHistoryItems.length>8) songHistoryItems.length=8;
+    renderSongHistory();
+  }
+
   function applyMetadata(title,artist,artwork){
     const safeTitle=title||"En vivo";
     const safeArtist=artist||cfg.radio?.name||cfg.stationName||"";
+    rememberSong(safeTitle,safeArtist);
     const fixedLogo=liveAsset(cfg.logo||"");
 
     setText("#radioTitle",safeTitle);
@@ -748,6 +816,46 @@
       });
     }else{
       video.src=tvUrl;
+    }
+  }
+
+  const tvFullscreen=$("#tvFullscreen");
+  const tvPip=$("#tvPip");
+  const tvSignalStatus=$("#tvSignalStatus");
+
+  if(video){
+    video.addEventListener("playing",()=>{
+      if(tvSignalStatus) tvSignalStatus.textContent="Señal reproduciéndose";
+    });
+    video.addEventListener("waiting",()=>{
+      if(tvSignalStatus) tvSignalStatus.textContent="Cargando señal...";
+    });
+    video.addEventListener("error",()=>{
+      if(tvSignalStatus) tvSignalStatus.textContent="Señal no disponible";
+    });
+  }
+
+  if(tvFullscreen){
+    tvFullscreen.onclick=async()=>{
+      try{
+        if(document.fullscreenElement) await document.exitFullscreen();
+        else await (video?.requestFullscreen?.() || $(".tvframe")?.requestFullscreen?.());
+      }catch(e){ console.warn(e); }
+    };
+  }
+
+  if(tvPip){
+    if(!document.pictureInPictureEnabled || !video?.requestPictureInPicture){
+      tvPip.hidden=true;
+    }else{
+      tvPip.onclick=async()=>{
+        try{
+          if(document.pictureInPictureElement) await document.exitPictureInPicture();
+          else await video.requestPictureInPicture();
+        }catch(e){
+          toast("Picture-in-Picture no disponible");
+        }
+      };
     }
   }
 

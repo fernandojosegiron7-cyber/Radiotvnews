@@ -74,6 +74,8 @@
 
     for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";
 
+    $("#rollupEnabled").checked=settings.featuredRollup?.enabled!==false;
+    $("#rollupSeconds").value=Number(settings.featuredRollup?.seconds||5);
     renderSchedule();
     renderNews();
   }
@@ -96,6 +98,11 @@
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};
     settings.socials={};
     for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();
+
+    settings.featuredRollup={
+      enabled:$("#rollupEnabled")?.checked!==false,
+      seconds:Math.min(20,Math.max(3,Number($("#rollupSeconds")?.value||5)))
+    };
 
     settings.schedule=$$("#scheduleEditor .repeat-item").map(item=>({
       time:item.querySelector('[data-field="time"]').value.trim(),
