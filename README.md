@@ -53,7 +53,7 @@ Panel → funciones privadas de Vercel → GitHub API → commit → nuevo deplo
 
 Consulta `INSTALACION-RAPIDA.txt` para las variables necesarias.
 
-## Cambio v4.1
-- Eliminada la barra negra fija de navegación inferior.
-- Radio y TV siguen accesibles desde las tarjetas/botones de la pantalla principal.
-- Ajustado el espacio inferior para aprovechar mejor la pantalla.
+
+## Cambio v4.2
+- Se conserva el menú inferior.
+- Se eliminó la sección duplicada de Radio/TV debajo del banner principal.

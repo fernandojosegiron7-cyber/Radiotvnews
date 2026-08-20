@@ -46,31 +46,6 @@
         </div>
       </div>
 
-      <div class="home-grid">
-        <section class="now-card glass">
-          <div class="section-label">AHORA AL AIRE</div>
-          <div class="now-main">
-            <div class="art" id="miniArtwork">♪</div>
-            <div class="nowtext">
-              <span id="miniStatus">Radio en vivo</span>
-              <strong id="miniTitle">Listo para reproducir</strong>
-              <small id="miniArtist">Configura tu stream</small>
-            </div>
-            <button id="miniPlay" class="round">▶</button>
-          </div>
-        </section>
-
-        <section class="tv-preview glass" data-go="tv">
-          <div class="section-label">TV EN VIVO</div>
-          <div class="tv-preview-screen">
-            <span class="live"><i></i> SEÑAL ACTIVA</span>
-            <div>▣</div>
-          </div>
-          <strong id="homeTvName">TV en vivo</strong>
-          <small>Ver transmisión</small>
-        </section>
-      </div>
-
       <div class="heading heading-row">
         <div><small>ACTUALIDAD</small><h2>Noticias destacadas</h2></div>
         <button class="text-btn" data-go="news">Ver todas →</button>
@@ -185,7 +160,16 @@
       </div>
     </section>
   </main>
-<dialog id="newsDialog" class="news-dialog">
+
+  <nav class="nav">
+    <button class="active" data-go="home"><span>⌂</span><small>Inicio</small></button>
+    <button data-go="radio"><span>♪</span><small>Radio</small></button>
+    <button data-go="tv"><span>▣</span><small>TV</small></button>
+    <button data-go="news"><span>☷</span><small>Noticias</small></button>
+    <button data-go="more"><span>•••</span><small>Más</small></button>
+  </nav>
+
+  <dialog id="newsDialog" class="news-dialog">
     <button id="closeNews" class="dialog-close">×</button>
     <img id="dialogImage" alt="" hidden>
     <div class="dialog-body">

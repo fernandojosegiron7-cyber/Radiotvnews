@@ -1,4 +1,4 @@
-const CACHE="radio-tv-pwa-v4-1";
+const CACHE="radio-tv-pwa-v4-2";
 const ASSETS=[
   "./","./index.html","./styles.css","./config.js","./app.js",
   "./manifest.webmanifest","./icons/icon.svg"

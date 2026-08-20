@@ -61,7 +61,7 @@
   if(cfg.logo){const i=new Image();i.src=cfg.logo;i.alt="Logo";$("#brandLogo").replaceChildren(i)}
 
   const views={home:$("#homeView"),radio:$("#radioView"),tv:$("#tvView"),news:$("#newsView"),more:$("#moreView")};
-  function go(n){Object.entries(views).forEach(([k,v])=>v.classList.toggle("active",k===n));scrollTo({top:0,behavior:"smooth"})}
+  function go(n){Object.entries(views).forEach(([k,v])=>v.classList.toggle("active",k===n));$$(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.go===n));scrollTo({top:0,behavior:"smooth"})}
   $$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 
   // Schedule
