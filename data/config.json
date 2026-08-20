@@ -13,7 +13,7 @@
   "radio": {
     "name": "Radio en vivo",
     "streamUrl": "https://stream.zeno.fm/stm76db4tk8uv.m3u",
-    "metadataUrl": "",
+    "metadataUrl": "https://api.zeno.fm/mounts/metadata/subscribe/stm76db4tk8uv",
     "fallbackArtwork": "https://ibb.co/1YK0gnM8"
   },
   "tv": {
