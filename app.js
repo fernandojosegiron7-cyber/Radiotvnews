@@ -57,14 +57,14 @@
   }
 
 
-  // Hora y clima en cabecera
+  // Hora y clima en barra superior
   function initTopClock(){
     const el=$("#topClock");
     if(!el) return;
 
     const update=()=>{
       const now=new Date();
-      el.textContent=now.toLocaleTimeString([],{
+      el.textContent=now.toLocaleTimeString("es-HN",{
         hour:"2-digit",
         minute:"2-digit",
         hour12:true
@@ -89,9 +89,6 @@
       61:["🌦","Lluvia ligera"],
       63:["🌧","Lluvia"],
       65:["🌧","Lluvia fuerte"],
-      71:["🌨","Nieve ligera"],
-      73:["🌨","Nieve"],
-      75:["🌨","Nieve fuerte"],
       80:["🌦","Chubascos"],
       81:["🌧","Chubascos"],
       82:["⛈","Chubascos fuertes"],
@@ -102,70 +99,95 @@
     return map[Number(code)]||["◌","Clima"];
   }
 
-  async function loadWeather(force=false){
+  function paintWeather({temperature,code,place}){
     const temp=$("#weatherTemp");
     const cond=$("#weatherCondition");
     const icon=$("#weatherIcon");
-    const label=$("#weatherLabel");
-
+    const placeEl=$("#weatherPlace");
     if(!temp||!cond||!icon) return;
 
+    const [ico,text]=weatherDescription(code);
+    icon.textContent=ico;
+    temp.textContent=Number.isFinite(Number(temperature))
+      ? `${Math.round(Number(temperature))}°C`
+      : "--°";
+    cond.textContent=text;
+    if(placeEl) placeEl.textContent=String(place||"HONDURAS").toUpperCase();
+
+    try{
+      localStorage.setItem("weather-cache",JSON.stringify({
+        ts:Date.now(),
+        temperature,
+        code,
+        place
+      }));
+    }catch{}
+  }
+
+  async function fetchWeather(latitude,longitude,place){
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&current=temperature_2m,weather_code&temperature_unit=celsius&timezone=auto`;
+    const r=await fetch(url,{cache:"no-store"});
+    if(!r.ok) throw new Error("weather");
+    const data=await r.json();
+    paintWeather({
+      temperature:data.current?.temperature_2m,
+      code:data.current?.weather_code,
+      place
+    });
+  }
+
+  async function fallbackWeather(){
+    // Respaldo: Tegucigalpa, Honduras, para que nunca quede la barra vacía.
+    try{
+      await fetchWeather(14.0723,-87.1921,"Tegucigalpa");
+    }catch{
+      const cond=$("#weatherCondition");
+      if(cond) cond.textContent="Clima no disponible";
+    }
+  }
+
+  function loadWeather(force=false){
+    const cond=$("#weatherCondition");
+    const icon=$("#weatherIcon");
+
+    if(force){
+      if(cond) cond.textContent="Actualizando...";
+      if(icon) icon.textContent="◌";
+    }
+
+    // Mostrar caché de inmediato mientras llega una actualización.
+    try{
+      const cached=JSON.parse(localStorage.getItem("weather-cache")||"null");
+      if(cached && Date.now()-cached.ts<60*60*1000){
+        paintWeather(cached);
+      }
+    }catch{}
+
     if(!("geolocation" in navigator)){
-      cond.textContent="No disponible";
+      fallbackWeather();
       return;
     }
 
-    if(force){
-      cond.textContent="Actualizando...";
-      icon.textContent="◌";
-    }
-
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      try{
-        const {latitude,longitude}=pos.coords;
-        const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=celsius&timezone=auto`;
-        const r=await fetch(url,{cache:"no-store"});
-        if(!r.ok) throw new Error("weather");
-        const data=await r.json();
-        const current=data.current||{};
-        const [ico,text]=weatherDescription(current.weather_code);
-
-        icon.textContent=ico;
-        temp.textContent=Number.isFinite(Number(current.temperature_2m))
-          ? `${Math.round(Number(current.temperature_2m))}°`
-          : "--°";
-        cond.textContent=text;
-        if(label) label.textContent="CLIMA";
-        localStorage.setItem("weather-cache",JSON.stringify({
-          ts:Date.now(),
-          temp:temp.textContent,
-          cond:text,
-          icon:ico
-        }));
-      }catch(e){
-        cond.textContent="Sin conexión";
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        fetchWeather(
+          pos.coords.latitude,
+          pos.coords.longitude,
+          "Tu ubicación"
+        ).catch(fallbackWeather);
+      },
+      ()=>fallbackWeather(),
+      {
+        enableHighAccuracy:false,
+        timeout:6500,
+        maximumAge:10*60*1000
       }
-    },err=>{
-      const cached=JSON.parse(localStorage.getItem("weather-cache")||"null");
-      if(cached && Date.now()-cached.ts<60*60*1000){
-        icon.textContent=cached.icon||"◌";
-        temp.textContent=cached.temp||"--°";
-        cond.textContent=cached.cond||"Clima";
-      }else{
-        cond.textContent="Permitir ubicación";
-        icon.textContent="⌖";
-      }
-    },{
-      enableHighAccuracy:false,
-      timeout:8000,
-      maximumAge:10*60*1000
-    });
+    );
   }
 
   initTopClock();
   loadWeather(false);
   setInterval(()=>loadWeather(false),10*60*1000);
-
   $("#weatherInfo")?.addEventListener("click",()=>loadWeather(true));
 
   // Theme

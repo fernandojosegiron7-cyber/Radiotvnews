@@ -16,7 +16,28 @@
 <body>
   <div id="appBackground" class="app-background"></div>
 
-  <header class="topbar">
+  
+  <div class="utility-strip" id="utilityStrip">
+    <div class="utility-inner">
+      <div class="utility-item utility-time">
+        <span class="utility-icon">◷</span>
+        <div>
+          <small>HORA</small>
+          <strong id="topClock">--:--</strong>
+        </div>
+      </div>
+
+      <button id="weatherInfo" class="utility-item utility-weather" type="button" aria-label="Actualizar clima">
+        <span id="weatherIcon" class="utility-icon">◌</span>
+        <div class="utility-weather-copy">
+          <small id="weatherPlace">HONDURAS</small>
+          <strong><span id="weatherTemp">--°</span> <span id="weatherCondition">Cargando clima...</span></strong>
+        </div>
+      </button>
+    </div>
+  </div>
+
+<header class="topbar">
     <div class="brand">
       <div class="logo" id="brandLogo">RT</div>
       <div class="brand-copy">
@@ -24,25 +45,6 @@
         <small id="stationSlogan">Radio, TV y noticias</small>
       </div>
     </div>
-    <div class="top-info">
-      <div class="top-info-item time-info" title="Hora actual">
-        <span class="top-info-icon">◷</span>
-        <div>
-          <small>HORA</small>
-          <strong id="topClock">--:--</strong>
-        </div>
-      </div>
-
-      <button id="weatherInfo" class="top-info-item weather-info" type="button" title="Actualizar clima">
-        <span id="weatherIcon" class="top-info-icon">◌</span>
-        <div>
-          <small id="weatherLabel">CLIMA</small>
-          <strong id="weatherTemp">--°</strong>
-        </div>
-        <span id="weatherCondition" class="weather-condition">Ubicación</span>
-      </button>
-    </div>
-
     <div class="top-actions">
       <button id="themeBtn" class="iconbtn" aria-label="Cambiar tema">◐</button>
       <button id="installBtn" class="iconbtn" hidden aria-label="Instalar aplicación">＋</button>
