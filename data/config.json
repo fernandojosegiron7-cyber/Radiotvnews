@@ -80,5 +80,10 @@
       "body": "Tegucigalpa, Honduras.— El Instituto Nacional de Migración (INM) informó este jueves la suspensión temporal de la emisión de pasaportes, debido a trabajos de actualización en su sistema.\n\nLa institución notificó la situación a los ciudadanos que tenían citas programadas y explicó que la medida está relacionada con labores técnicas necesarias para el funcionamiento del servicio.\n\nLas autoridades recomendaron a los usuarios mantenerse atentos a las indicaciones oficiales sobre la reanudación de la atención y la reprogramación correspondiente.",
       "featured": true
     }
-  ]
+  ],
+  "breakingNews": {
+    "enabled": true,
+    "text": "",
+    "newsId": ""
+  }
 }
