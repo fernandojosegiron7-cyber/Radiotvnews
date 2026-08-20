@@ -54,11 +54,18 @@
     $("#darkBackground").value=settings.appearance?.darkBackground||"";
     $("#lightBackground").value=settings.appearance?.lightBackground||"";
 
-    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";
-
-    $("#tickerEnabled").checked=!!settings.newsTicker?.enabled;
+    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) $("#"+k).value=settings.socials?.[k]||"";    $("#tickerEnabled").checked=!!settings.newsTicker?.enabled;
     $("#tickerMinutes").value=String(Number(settings.newsTicker?.minutes||7));
-    renderTickerHeadlines();
+
+    const legacyTickerText=Array.isArray(settings.newsTicker?.headlines)
+      ? settings.newsTicker.headlines
+          .filter(x=>x && x.enabled!==false && String(x.text||"").trim())
+          .map(x=>String(x.text).trim())
+          .join(" • ")
+      : "";
+
+    $("#tickerText").value=String(settings.newsTicker?.text||legacyTickerText||"");
+    updateTickerCounter();
     renderSchedule();
     renderNews();
   }
@@ -74,18 +81,10 @@
     settings.tv={name:$("#tvNameInput").value.trim(),streamUrl:$("#tvStream").value.trim(),poster:$("#tvPoster").value.trim()};
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};
     settings.socials={};
-    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();
-
-    settings.newsTicker={
+    for(const k of ["facebook","instagram","tiktok","youtube","whatsapp"]) settings.socials[k]=$("#"+k).value.trim();    settings.newsTicker={
       enabled:$("#tickerEnabled")?.checked||false,
       minutes:Math.min(20,Math.max(1,Number($("#tickerMinutes")?.value||7))),
-      headlines:$$("#tickerHeadlineEditor .ticker-headline-row")
-        .map(row=>({
-          text:row.querySelector("[data-ticker-text]")?.value.trim()||"",
-          enabled:row.querySelector("[data-ticker-enabled]")?.checked!==false
-        }))
-        .filter(x=>x.text)
-        .slice(0,10)
+      text:$("#tickerText")?.value.trim()||""
     };
 
     settings.schedule=$$("#scheduleEditor .repeat-item").map(item=>({
@@ -125,46 +124,13 @@
   });
 
 
-  function renderTickerHeadlines(){
-    const editor=$("#tickerHeadlineEditor");
-    if(!editor) return;
-    editor.innerHTML="";
-    const items=Array.isArray(settings.newsTicker?.headlines)
-      ? settings.newsTicker.headlines
-      : [];
-
-    items.slice(0,10).forEach(addTickerHeadline);
-
-    if(!items.length){
-      addTickerHeadline({text:"",enabled:true});
-    }
+  function updateTickerCounter(){
+    const field=$("#tickerText");
+    const counter=$("#tickerTextCounter");
+    if(counter) counter.textContent=`${String(field?.value||"").length} caracteres`;
   }
 
-  function addTickerHeadline(item={}){
-    const editor=$("#tickerHeadlineEditor");
-    if(!editor) return;
-
-    if(editor.querySelectorAll(".ticker-headline-row").length>=10){
-      return toast("Máximo 10 titulares");
-    }
-
-    const row=document.createElement("div");
-    row.className="ticker-headline-row";
-    row.innerHTML=`
-      <label class="ticker-headline-check">
-        <input data-ticker-enabled type="checkbox" ${item.enabled===false?"":"checked"}>
-      </label>
-      <input data-ticker-text type="text" maxlength="180"
-             value="${attr(item.text||"")}"
-             placeholder="Escribe el titular que aparecerá en el scroll">
-      <button class="danger" type="button">Eliminar</button>
-    `;
-
-    row.querySelector(".danger").onclick=()=>row.remove();
-    editor.appendChild(row);
-  }
-
-  $("#addTickerHeadline")?.addEventListener("click",()=>addTickerHeadline({text:"",enabled:true}));
+  $("#tickerText")?.addEventListener("input",updateTickerCounter);
 
   function renderSchedule(){
     $("#scheduleEditor").innerHTML="";

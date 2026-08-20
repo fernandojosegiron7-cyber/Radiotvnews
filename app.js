@@ -495,29 +495,39 @@
       return;
     }
 
-    const headlines=(Array.isArray(tickerCfg.headlines)?tickerCfg.headlines:[])
-      .filter(x=>x && x.enabled!==false && String(x.text||"").trim())
-      .slice(0,10);
+    let text=String(tickerCfg.text||"").trim();
 
-    if(!headlines.length){
+    // Compatibilidad con la versión anterior de titulares separados.
+    if(!text && Array.isArray(tickerCfg.headlines)){
+      text=tickerCfg.headlines
+        .filter(x=>x && x.enabled!==false && String(x.text||"").trim())
+        .map(x=>String(x.text).trim())
+        .join(" • ");
+    }
+
+    if(!text){
       wrapper.hidden=true;
       return;
     }
 
+    // Los saltos de línea se convierten en separadores elegantes.
+    const normalized=text
+      .split(/\n+/)
+      .map(x=>x.trim())
+      .filter(Boolean)
+      .join("   ✦   ");
+
     const minutes=Math.min(20,Math.max(1,Number(tickerCfg.minutes||7)));
     const duration=Math.round(minutes*60);
 
-    const group=headlines.map((item,i)=>`
-      <span class="ticker-item">
-        <span class="ticker-number">${String(i+1).padStart(2,"0")}</span>
-        <strong>${esc(item.text)}</strong>
-        <span class="ticker-separator">✦</span>
-      </span>
-    `).join("");
+    const content=`
+      <span class="ticker-single-text">${esc(normalized)}</span>
+      <span class="ticker-separator">✦</span>
+    `;
 
     track.innerHTML=`
-      <div class="ticker-group">${group}</div>
-      <div class="ticker-group" aria-hidden="true">${group}</div>
+      <div class="ticker-group">${content}</div>
+      <div class="ticker-group" aria-hidden="true">${content}</div>
     `;
 
     track.style.setProperty("--ticker-duration",`${duration}s`);

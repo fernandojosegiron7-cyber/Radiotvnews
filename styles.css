@@ -800,3 +800,15 @@ button.utility-item{
     text-overflow:ellipsis;
   }
 }
+
+
+/* v6.3 · Scroll de texto único */
+.ticker-single-text{
+  display:inline-block;
+  padding:0 22px;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:800;
+  color:var(--text);
+  letter-spacing:.05px;
+}

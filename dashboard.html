@@ -83,15 +83,20 @@
             <h2>Scroll de noticias</h2>
           </div>
           <div class="ticker-admin-box">
-            <small>SCROLL DE NOTICIAS</small>
-            <h3>Escribe los titulares del scroll</h3>
+            <small>SCROLL</small>
+            <h3>Texto del scroll</h3>
+
+            <label class="check">
+              <input id="tickerEnabled" type="checkbox">
+              Mostrar scroll
+            </label>
+
+            <label>Texto completo del scroll
+              <textarea id="tickerText" rows="8"
+                placeholder="Escribe aquí todos los titulares. Puedes poner 10, 20 o más. Puedes separarlos con saltos de línea, •, | o —."></textarea>
+            </label>
 
             <div class="grid two">
-              <label class="check">
-                <input id="tickerEnabled" type="checkbox">
-                Mostrar scroll de noticias
-              </label>
-
               <label>Duración de una vuelta completa
                 <select id="tickerMinutes">
                   <option value="1">1 minuto</option>
@@ -104,17 +109,16 @@
                   <option value="20">20 minutos</option>
                 </select>
               </label>
-            </div>
 
-            <div class="ticker-editor-head">
-              <div>
-                <strong>Titulares del scroll</strong>
-                <small>Escribe aquí hasta 10 titulares. No tienen relación con las noticias publicadas.</small>
+              <div class="ticker-preview-box">
+                <small>VISTA PREVIA</small>
+                <div id="tickerTextCounter">0 caracteres</div>
               </div>
-              <button id="addTickerHeadline" class="secondary" type="button">+ Titular</button>
             </div>
 
-            <div id="tickerHeadlineEditor" class="ticker-headline-editor"></div>
+            <p class="admin-help">
+              Todo el contenido se mostrará como una sola cinta continua. No hay límite de 10 titulares.
+            </p>
           </div>
         </section>
 
