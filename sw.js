@@ -1,4 +1,4 @@
-const CACHE="radio-tv-pwa-v6-3-scroll-texto-unico";
+const CACHE="radio-tv-pwa-v6-3-1-scroll-auto-fix";
 const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./icons/icon.svg"];
 
 self.addEventListener("install",e=>{

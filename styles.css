@@ -247,7 +247,7 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   margin:18px auto 0;
   width:min(720px,100%);
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:auto 1fr;
   align-items:center;
   gap:12px;
   padding:13px 16px;
@@ -477,7 +477,7 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   z-index:70;
   width:100%;
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:auto 1fr;
   align-items:center;
   min-height:44px;
   overflow:hidden;
@@ -511,9 +511,7 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   animation:tickerMove var(--ticker-duration) linear infinite;
   will-change:transform;
 }
-.ticker-track.paused{
-  animation-play-state:paused;
-}
+
 .ticker-group{
   display:flex;
   align-items:center;
@@ -559,15 +557,7 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   color:var(--muted);
   opacity:.45;
 }
-.ticker-pause{
-  width:42px;
-  align-self:stretch;
-  border:0;
-  border-left:1px solid var(--line);
-  background:var(--panel);
-  color:var(--text);
-  font-weight:900;
-}
+
 @keyframes tickerMove{
   from{transform:translateX(0)}
   to{transform:translateX(-50%)}
@@ -602,7 +592,7 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
 
 @media(max-width:680px){
   .news-ticker{
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:auto 1fr;
     min-height:40px;
   }
   .ticker-label{
@@ -618,9 +608,6 @@ main{max-width:1050px;margin:auto;padding:8px 18px 118px}.view{display:none;anim
   }
   .ticker-category{
     display:none;
-  }
-  .ticker-pause{
-    width:36px;
   }
 }
 
@@ -811,4 +798,27 @@ button.utility-item{
   font-weight:800;
   color:var(--text);
   letter-spacing:.05px;
+}
+
+
+/* v6.3.1 · Scroll siempre automático */
+.ticker-track{
+  animation:none;
+  transform:translate3d(0,0,0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.ticker-track.ticker-running{
+  animation:tickerMove var(--ticker-duration) linear infinite !important;
+  animation-play-state:running !important;
+  -webkit-animation:tickerMove var(--ticker-duration) linear infinite !important;
+  -webkit-animation-play-state:running !important;
+}
+@-webkit-keyframes tickerMove{
+  from{-webkit-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
+  to{-webkit-transform:translate3d(-50%,0,0);transform:translate3d(-50%,0,0)}
+}
+@keyframes tickerMove{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
 }
