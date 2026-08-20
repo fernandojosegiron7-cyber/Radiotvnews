@@ -18,7 +18,7 @@
   },
   "tv": {
     "name": "TV en vivo",
-    "streamUrl": "",
+    "streamUrl": "https://live.streamhch.com/live/streams/hch1.m3u8",
     "poster": ""
   },
   "socials": {
