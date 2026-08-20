@@ -92,7 +92,7 @@
   "newsTicker": {
     "enabled": true,
     "maxItems": 10,
-    "minutes": 4
+    "minutes": 2.5
   },
   "featuredRollup": {
     "enabled": true,
