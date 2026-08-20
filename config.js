@@ -5,6 +5,11 @@ window.APP_CONFIG = {
   "logo": "",
   "accent": "#6D5EF9",
   "accent2": "#14B8A6",
+  "appearance": {
+    "defaultTheme": "auto",
+    "lightBackground": "",
+    "darkBackground": ""
+  },
   "radio": {
     "name": "Radio en vivo",
     "streamUrl": "",
@@ -40,11 +45,6 @@ window.APP_CONFIG = {
       "host": "Redacción"
     },
     {
-      "time": "04:00 PM",
-      "title": "Tarde musical",
-      "host": "En vivo"
-    },
-    {
       "time": "07:00 PM",
       "title": "Programación estelar",
       "host": "Radio & TV"
@@ -52,10 +52,10 @@ window.APP_CONFIG = {
   ],
   "news": [
     {
-      "id": "bienvenida-v4",
-      "title": "Bienvenido a la nueva experiencia Radio & TV",
-      "excerpt": "La aplicación ahora incorpora una sección completa de noticias y un diseño adaptable a modo claro y oscuro.",
-      "body": "Desde el panel administrativo puedes publicar noticias, elegir categorías, destacar contenido y agregar una imagen principal. La aplicación adapta automáticamente sus colores al modo del dispositivo.",
+      "id": "bienvenida",
+      "title": "Bienvenido a la nueva PWA de Radio & TV",
+      "excerpt": "Radio, televisión, programación y noticias desde una sola aplicación.",
+      "body": "Desde el panel administrativo puedes cambiar el contenido, la programación, los streams, la apariencia y las noticias.",
       "image": "",
       "date": "Hoy",
       "category": "Emisora",
@@ -63,18 +63,13 @@ window.APP_CONFIG = {
     },
     {
       "id": "programacion",
-      "title": "Consulta la programación desde cualquier dispositivo",
-      "excerpt": "La nueva estructura muestra la programación diaria de una forma más clara y ordenada.",
-      "body": "La parrilla puede editarse desde Administración y los cambios se publican mediante GitHub y Vercel.",
+      "title": "Consulta la programación de la emisora",
+      "excerpt": "Revisa los programas y horarios disponibles.",
+      "body": "La programación se administra desde el panel privado y se guarda directamente en GitHub.",
       "image": "",
       "date": "Hoy",
       "category": "Programación",
       "featured": false
     }
-  ],
-  "appearance": {
-    "defaultTheme": "auto",
-    "lightBackground": "",
-    "darkBackground": ""
-  }
+  ]
 };

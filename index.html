@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0d121c" id="themeColorMeta">
+  <meta name="theme-color" content="#0b1018" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RadioTV">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -33,13 +35,13 @@
         <div class="hero-copy">
           <span class="live"><i></i> EN VIVO</span>
           <h1 id="heroTitle">Tu Radio & TV</h1>
-          <p id="heroText"></p>
+          <p id="heroText">Radio, TV y noticias en un solo lugar</p>
           <div class="hero-actions">
             <button class="hero-primary" data-go="radio">▶ Escuchar radio</button>
             <button class="hero-secondary" data-go="tv">▣ Ver TV</button>
           </div>
         </div>
-        <div class="signal-orbit">
+        <div class="signal-orbit" aria-hidden="true">
           <div class="orbit-ring ring-a"></div>
           <div class="orbit-ring ring-b"></div>
           <div class="orbit-core">RT</div>
@@ -52,9 +54,7 @@
       </div>
       <div id="featuredNews" class="featured-news"></div>
 
-      <div class="heading">
-        <small>HOY</small><h2>Programación</h2>
-      </div>
+      <div class="heading"><small>HOY</small><h2>Programación</h2></div>
       <div id="scheduleList" class="schedule"></div>
 
       <div class="heading heading-row">
@@ -86,7 +86,7 @@
         <div class="radio-copy">
           <small id="radioStatus">RADIO EN VIVO</small>
           <h2 id="radioTitle">Listo para reproducir</h2>
-          <p id="radioArtist">Configura la URL de tu radio</p>
+          <p id="radioArtist">Configura la URL de tu radio desde Administración</p>
         </div>
 
         <div class="audio-bars" aria-hidden="true">
@@ -94,7 +94,7 @@
         </div>
 
         <div class="radio-actions">
-          <button id="radioPlay" class="bigplay">▶</button>
+          <button id="radioPlay" class="bigplay" aria-label="Reproducir radio">▶</button>
         </div>
 
         <div class="volume">
@@ -116,6 +116,7 @@
         <button data-go="home">‹</button>
         <div><small>SEÑAL DE VIDEO</small><h1>TV en vivo</h1></div>
       </div>
+
       <div class="tv glass">
         <div class="tvframe">
           <video id="tvVideo" controls playsinline></video>
@@ -137,7 +138,6 @@
         <button data-go="home">‹</button>
         <div><small>INFORMACIÓN</small><h1>Noticias</h1></div>
       </div>
-
       <div id="newsCategories" class="category-strip"></div>
       <div id="newsHero"></div>
       <div class="heading"><small>ÚLTIMAS</small><h2>Todas las noticias</h2></div>

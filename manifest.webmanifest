@@ -4,9 +4,9 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0d121c",
-  "theme_color": "#0d121c",
-  "description": "PWA adaptable para Radio, TV, Noticias y Programación.",
+  "background_color": "#0b1018",
+  "theme_color": "#0b1018",
+  "description": "PWA para Radio, TV, Noticias y Programación.",
   "icons": [
     {
       "src": "icons/icon.svg",

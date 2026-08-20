@@ -1,59 +1,32 @@
-# FG Radio & TV PWA v4.0 — Adaptive + Noticias
+# RadioTV PWA COMPLETO v5
 
-Versión mejorada de la PWA con panel administrativo conectado a GitHub.
+Proyecto completo para GitHub + Vercel.
 
-## Novedades v4
-- Rediseño completo de Radio
-- Modo claro / oscuro / automático
-- Botón manual para cambiar de tema
-- Fondo independiente para modo claro y oscuro
-- Nueva sección Noticias
-- Categorías de noticias
-- Noticias destacadas
-- Lectura completa dentro de la app
-- Imagen, fecha, categoría, resumen y cuerpo
-- Administración de noticias desde /admin.html
-- Subida de imágenes de noticias a GitHub
-- Inicio más visual con Radio, TV, programación y noticias
-- Navegación inferior: Inicio / Radio / TV / Noticias / Más
-
-## Panel Administrativo
-Desde `/admin.html` puedes editar:
-- Identidad
+## Incluye
+- Inicio
 - Radio
 - TV
-- Programación
 - Noticias
-- Apariencia
-- Redes sociales
+- Programación
+- Modo claro/oscuro/automático
+- Fondos independientes
+- Panel admin
+- Guardado directo a GitHub
+- Subida de imágenes
+- PWA instalable
+- Service Worker actualizado
 
-### Apariencia
-Puedes elegir:
-- Automático según el dispositivo
-- Oscuro
-- Claro
+## Vercel Environment Variables
+ADMIN_PASSWORD
+SESSION_SECRET
+GITHUB_OWNER
+GITHUB_REPO
+GITHUB_BRANCH
+GITHUB_TOKEN
 
-Además puedes subir:
-- Fondo para modo oscuro
-- Fondo para modo claro
+## Panel
+/admin.html
 
-## Noticias
-Cada noticia permite:
-- Fecha
-- Categoría
-- Titular
-- Imagen
-- Resumen
-- Texto completo
-- Marcar como destacada
-
-## Backend
-Se mantiene:
-Panel → funciones privadas de Vercel → GitHub API → commit → nuevo deployment.
-
-Consulta `INSTALACION-RAPIDA.txt` para las variables necesarias.
-
-
-## Cambio v4.2
-- Se conserva el menú inferior.
-- Se eliminó la sección duplicada de Radio/TV debajo del banner principal.
+## Importante
+Usa streams HTTPS.
+Para TV se recomienda HLS .m3u8 compatible con navegador/CORS.

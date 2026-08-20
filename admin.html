@@ -3,22 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0d121c">
+  <meta name="theme-color" content="#0b1018">
   <title>Administración · Radio & TV</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="bg"></div>
-
   <section id="loginView" class="login-wrap">
     <form id="loginForm" class="login-card">
       <div class="admin-logo">RT</div>
       <small>PANEL PRIVADO</small>
       <h1>Administración</h1>
       <p>Ingresa la contraseña configurada en Vercel.</p>
-      <label>Contraseña
-        <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
-      </label>
+      <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
       <button class="primary" type="submit">Iniciar sesión</button>
       <div id="loginMsg" class="msg"></div>
       <a href="index.html" class="backlink">← Volver a la app</a>
@@ -27,14 +23,8 @@
 
   <div id="dashboard" hidden>
     <header class="admin-top">
-      <div>
-        <small>PANEL ADMINISTRATIVO · GITHUB</small>
-        <strong id="adminStation">Radio & TV</strong>
-      </div>
-      <div class="top-actions">
-        <a class="ghost" href="index.html" target="_blank">Ver app</a>
-        <button class="ghost" id="logoutBtn">Salir</button>
-      </div>
+      <div><small>PANEL ADMINISTRATIVO · GITHUB</small><strong id="adminStation">Radio & TV</strong></div>
+      <div class="top-actions"><a class="ghost" href="index.html" target="_blank">Ver app</a><button class="ghost" id="logoutBtn">Salir</button></div>
     </header>
 
     <main class="admin-shell">
@@ -54,109 +44,69 @@
           <button id="saveBtn" class="primary">Guardar en GitHub</button>
         </div>
 
-        <div class="github-note">
-          Cada vez que guardas, el panel actualiza <code>data/config.json</code> y crea un commit.
-          Si Vercel está conectado a este repositorio, publicará la nueva versión automáticamente.
-        </div>
-
         <section class="panel active" data-panel="general">
           <div class="panel-head"><small>IDENTIDAD</small><h2>Datos generales</h2></div>
           <div class="grid two">
-            <label>Nombre de la emisora<input id="stationName" type="text"></label>
+            <label>Nombre<input id="stationNameInput" type="text"></label>
             <label>Nombre corto<input id="shortName" type="text"></label>
           </div>
           <label>Eslogan<input id="slogan" type="text"></label>
-
           <div class="grid two">
             <label>Color principal<input id="accent" type="color"></label>
             <label>Color secundario<input id="accent2" type="color"></label>
           </div>
-
           <div class="upload-card">
-            <div>
-              <small>LOGO</small>
-              <strong>Logo de la app</strong>
-              <p>Puedes usar una URL o subir una imagen al repositorio.</p>
-            </div>
+            <small>LOGO</small><strong>Logo de la app</strong>
             <input id="logo" type="text" placeholder="/assets/uploads/logo/...">
-            <div class="upload-row">
-              <input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-              <button class="secondary" id="uploadLogoBtn" type="button">Subir logo</button>
-            </div>
-            <img id="logoPreview" class="preview" alt="" hidden>
+            <div class="upload-row"><input id="logoFile" type="file" accept="image/*"><button class="secondary" id="uploadLogoBtn" type="button">Subir logo</button></div>
           </div>
         </section>
 
         <section class="panel" data-panel="radio">
           <div class="panel-head"><small>AUDIO</small><h2>Radio en vivo</h2></div>
           <label>Nombre<input id="radioName" type="text"></label>
-          <label>URL del stream<input id="radioStream" type="url" placeholder="https://servidor/stream"></label>
-          <label>URL de metadatos JSON<input id="metadataUrl" type="url" placeholder="https://api/metadata"></label>
-          <label>Portada de respaldo<input id="radioArtwork" type="text" placeholder="/assets/uploads/radio/..."></label>
-          <div class="upload-row">
-            <input id="radioArtworkFile" type="file" accept="image/png,image/jpeg,image/webp">
-            <button class="secondary" id="uploadRadioArtworkBtn" type="button">Subir portada</button>
-          </div>
+          <label>URL del stream<input id="radioStream" type="url"></label>
+          <label>URL de metadatos JSON<input id="metadataUrl" type="url"></label>
+          <label>Portada de respaldo<input id="radioArtwork" type="text"></label>
+          <div class="upload-row"><input id="radioArtworkFile" type="file" accept="image/*"><button class="secondary" id="uploadRadioArtworkBtn" type="button">Subir portada</button></div>
         </section>
 
         <section class="panel" data-panel="tv">
           <div class="panel-head"><small>VIDEO</small><h2>TV en vivo</h2></div>
-          <label>Nombre<input id="tvName" type="text"></label>
-          <label>URL HLS / .m3u8<input id="tvStream" type="url" placeholder="https://servidor/canal.m3u8"></label>
-          <label>Poster / imagen de espera<input id="tvPoster" type="text" placeholder="/assets/uploads/tv/..."></label>
-          <div class="upload-row">
-            <input id="tvPosterFile" type="file" accept="image/png,image/jpeg,image/webp">
-            <button class="secondary" id="uploadTvPosterBtn" type="button">Subir poster</button>
-          </div>
+          <label>Nombre<input id="tvNameInput" type="text"></label>
+          <label>URL HLS / .m3u8<input id="tvStream" type="url"></label>
+          <label>Poster<input id="tvPoster" type="text"></label>
+          <div class="upload-row"><input id="tvPosterFile" type="file" accept="image/*"><button class="secondary" id="uploadTvPosterBtn" type="button">Subir poster</button></div>
         </section>
 
         <section class="panel" data-panel="schedule">
-          <div class="panel-head with-action">
-            <div><small>PARRILLA</small><h2>Programación</h2></div>
-            <button class="secondary" id="addSchedule" type="button">+ Programa</button>
-          </div>
+          <div class="panel-head with-action"><div><small>PARRILLA</small><h2>Programación</h2></div><button class="secondary" id="addSchedule">+ Programa</button></div>
           <div id="scheduleEditor" class="repeat-list"></div>
         </section>
 
         <section class="panel" data-panel="news">
-          <div class="panel-head with-action">
-            <div><small>CONTENIDO</small><h2>Noticias</h2></div>
-            <button class="secondary" id="addNews" type="button">+ Noticia</button>
-          </div>
+          <div class="panel-head with-action"><div><small>CONTENIDO</small><h2>Noticias</h2></div><button class="secondary" id="addNews">+ Noticia</button></div>
           <div id="newsEditor" class="repeat-list"></div>
         </section>
 
-
         <section class="panel" data-panel="appearance">
           <div class="panel-head"><small>DISEÑO</small><h2>Apariencia</h2></div>
-          <label>Tema por defecto
-            <select id="defaultTheme">
-              <option value="auto">Automático según dispositivo</option>
-              <option value="dark">Oscuro</option>
-              <option value="light">Claro</option>
-            </select>
-          </label>
-          <label>Fondo para modo oscuro<input id="darkBackground" type="text" placeholder="/assets/uploads/background/... o https://..."></label>
-          <div class="upload-row">
-            <input id="darkBackgroundFile" type="file" accept="image/png,image/jpeg,image/webp">
-            <button class="secondary" id="uploadDarkBgBtn" type="button">Subir fondo oscuro</button>
-          </div>
-          <label>Fondo para modo claro<input id="lightBackground" type="text" placeholder="/assets/uploads/background/... o https://..."></label>
-          <div class="upload-row">
-            <input id="lightBackgroundFile" type="file" accept="image/png,image/jpeg,image/webp">
-            <button class="secondary" id="uploadLightBgBtn" type="button">Subir fondo claro</button>
-          </div>
+          <label>Tema por defecto<select id="defaultTheme"><option value="auto">Automático</option><option value="dark">Oscuro</option><option value="light">Claro</option></select></label>
+          <label>Fondo oscuro<input id="darkBackground" type="text"></label>
+          <div class="upload-row"><input id="darkBackgroundFile" type="file" accept="image/*"><button class="secondary" id="uploadDarkBgBtn">Subir fondo oscuro</button></div>
+          <label>Fondo claro<input id="lightBackground" type="text"></label>
+          <div class="upload-row"><input id="lightBackgroundFile" type="file" accept="image/*"><button class="secondary" id="uploadLightBgBtn">Subir fondo claro</button></div>
         </section>
 
         <section class="panel" data-panel="social">
-          <div class="panel-head"><small>ENLACES</small><h2>Redes sociales</h2></div>
+          <div class="panel-head"><small>ENLACES</small><h2>Redes</h2></div>
           <div class="grid two">
             <label>Facebook<input id="facebook" type="url"></label>
             <label>Instagram<input id="instagram" type="url"></label>
             <label>TikTok<input id="tiktok" type="url"></label>
             <label>YouTube<input id="youtube" type="url"></label>
           </div>
-          <label>WhatsApp<input id="whatsapp" type="url" placeholder="https://wa.me/..."></label>
+          <label>WhatsApp<input id="whatsapp" type="url"></label>
         </section>
       </section>
     </main>
