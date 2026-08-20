@@ -1,5 +1,5 @@
-const CACHE="radio-tv-pwa-v5-4-logo-total";
-const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./manifest.webmanifest","./icons/icon.svg"];
+const CACHE="radio-tv-pwa-v5-5-pro";
+const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./icons/icon.svg"];
 
 self.addEventListener("install",e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));

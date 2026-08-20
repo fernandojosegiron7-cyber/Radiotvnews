@@ -55,6 +55,9 @@
     $("#accent").value=settings.accent||"#6D5EF9";
     $("#accent2").value=settings.accent2||"#14B8A6";
     $("#logo").value=settings.logo||"";
+    $("#breakingEnabled").checked=!!settings.breakingNews?.enabled;
+    $("#breakingTextAdmin").value=settings.breakingNews?.text||"";
+    $("#breakingNewsId").value=settings.breakingNews?.newsId||"";
     $("#adminStation").textContent=settings.stationName||"Radio & TV";
 
     $("#radioName").value=settings.radio?.name||"";
@@ -83,6 +86,11 @@
     settings.accent2=$("#accent2").value;
     settings.logo=$("#logo").value.trim();
 
+    settings.breakingNews={
+      enabled:$("#breakingEnabled")?.checked||false,
+      text:$("#breakingTextAdmin")?.value.trim()||"",
+      newsId:$("#breakingNewsId")?.value.trim()||""
+    };
     settings.radio={name:$("#radioName").value.trim(),streamUrl:$("#radioStream").value.trim(),metadataUrl:$("#metadataUrl").value.trim()};
     settings.tv={name:$("#tvNameInput").value.trim(),streamUrl:$("#tvStream").value.trim(),poster:$("#tvPoster").value.trim()};
     settings.appearance={defaultTheme:$("#defaultTheme").value,darkBackground:$("#darkBackground").value.trim(),lightBackground:$("#lightBackground").value.trim()};

@@ -32,6 +32,18 @@
   }
 
   const cfg = await loadConfig();
+
+  function buildNewsUrl(id){
+    const u=new URL(window.location.href);
+    u.hash=id?`news=${encodeURIComponent(id)}`:"";
+    return u.toString();
+  }
+
+  function newsIdFromHash(){
+    const raw=window.location.hash.replace(/^#/,"");
+    if(!raw.startsWith("news="))return "";
+    try{return decodeURIComponent(raw.slice(5))}catch{return raw.slice(5)}
+  }
   const esc = s => String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
   const setText = (sel,val) => { const el=$(sel); if(el) el.textContent=val; };
 
@@ -90,6 +102,29 @@
   setText("#heroText",cfg.slogan||"");
   setText("#tvName",cfg.tv?.name||"TV en vivo");
   setText("#radioStationName",cfg.radio?.name||cfg.stationName||"Radio");
+
+  function initBreakingNews(){
+    const bar=$("#breakingBar");
+    const text=$("#breakingText");
+    const close=$("#breakingClose");
+    const data=cfg.breakingNews||{};
+    if(!bar||!text||!data.enabled||!String(data.text||"").trim()) return;
+
+    bar.hidden=false;
+    text.textContent=data.text;
+
+    text.onclick=()=>{
+      if(data.newsId && allNews?.some?.(n=>n.id===data.newsId)){
+        openNews(data.newsId);
+      }else{
+        go("news");
+      }
+    };
+
+    if(close){
+      close.onclick=()=>bar.classList.add("breaking-hide");
+    }
+  }
 
   // El logo cargado desde Admin también es el favicon de la web.
   const currentLogo=liveAsset(cfg.logo||"");
@@ -162,6 +197,46 @@
     `).join("") || "<p>Sin programación configurada.</p>";
   }
 
+
+  function timeToMinutes(value=""){
+    const m=String(value).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+    if(!m)return null;
+    let h=Number(m[1]), min=Number(m[2]);
+    const ap=(m[3]||"").toUpperCase();
+    if(ap==="PM" && h<12) h+=12;
+    if(ap==="AM" && h===12) h=0;
+    return h*60+min;
+  }
+
+  function updateOnAirProgram(){
+    const entries=(cfg.schedule||[])
+      .map(x=>({...x,minutes:timeToMinutes(x.time)}))
+      .filter(x=>x.minutes!==null)
+      .sort((a,b)=>a.minutes-b.minutes);
+
+    if(!entries.length)return;
+
+    const now=new Date();
+    const mins=now.getHours()*60+now.getMinutes();
+
+    let current=entries[entries.length-1];
+    let next=entries[0];
+
+    for(let i=0;i<entries.length;i++){
+      if(entries[i].minutes<=mins){
+        current=entries[i];
+        next=entries[(i+1)%entries.length];
+      }
+    }
+
+    setText("#onAirTitle",current.title||"Programación en vivo");
+    setText("#onAirHost",current.host||"");
+    setText("#nextProgram",`${next.time||""} · ${next.title||""}`);
+  }
+
+  updateOnAirProgram();
+  setInterval(updateOnAirProgram,60000);
+
   // News
   const allNews=(cfg.news||[]).map((n,i)=>({...n,id:n.id||`news-${i}`}));
   let currentCategory="Todas";
@@ -182,6 +257,8 @@
     $$("[data-news-id]").forEach(el=>el.onclick=()=>openNews(el.dataset.newsId));
   }
 
+  let currentOpenNewsId="";
+
   function openNews(id){
     const n=allNews.find(x=>x.id===id);
     if(!n) return;
@@ -198,11 +275,63 @@
     }
 
     const dialog=$("#newsDialog");
-    if(dialog?.showModal) dialog.showModal();
+    currentOpenNewsId=id;
+    history.replaceState(null,"",buildNewsUrl(id));
+
+    if(dialog?.showModal){
+      dialog.classList.remove("news-dialog-closing");
+      dialog.showModal();
+      requestAnimationFrame(()=>dialog.classList.add("news-dialog-open"));
+    }
+  }
+
+  function closeNewsAnimated(){
+    const dialog=$("#newsDialog");
+    if(!dialog?.open) return;
+    dialog.classList.remove("news-dialog-open");
+    dialog.classList.add("news-dialog-closing");
+    history.replaceState(null,"",window.location.pathname+window.location.search);
+    setTimeout(()=>{
+      dialog.classList.remove("news-dialog-closing");
+      dialog.close();
+      currentOpenNewsId="";
+    },260);
   }
 
   const closeNews=$("#closeNews");
-  if(closeNews) closeNews.onclick=()=>$("#newsDialog")?.close();
+  if(closeNews) closeNews.onclick=closeNewsAnimated;
+
+  $("#newsDialog")?.addEventListener("cancel",e=>{
+    e.preventDefault();
+    closeNewsAnimated();
+  });
+
+
+  const shareWhatsapp=$("#shareWhatsapp");
+  const shareFacebook=$("#shareFacebook");
+  const shareCopy=$("#shareCopy");
+
+  if(shareWhatsapp) shareWhatsapp.onclick=()=>{
+    const n=allNews.find(x=>x.id===currentOpenNewsId);
+    const url=buildNewsUrl(currentOpenNewsId);
+    const text=`${n?.title||"Noticia"} ${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank","noopener");
+  };
+
+  if(shareFacebook) shareFacebook.onclick=()=>{
+    const url=buildNewsUrl(currentOpenNewsId);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,"_blank","noopener");
+  };
+
+  if(shareCopy) shareCopy.onclick=async()=>{
+    const url=buildNewsUrl(currentOpenNewsId);
+    try{
+      await navigator.clipboard.writeText(url);
+      toast("Enlace copiado");
+    }catch{
+      prompt("Copia este enlace",url);
+    }
+  };
 
   // Noticias destacadas tipo ROLL-UP
   const featuredMarked=allNews.filter(n=>n.featured);
@@ -394,6 +523,10 @@
   }
 
   renderNewsPage();
+  initBreakingNews();
+
+  const deepLinkedNews=newsIdFromHash();
+  if(deepLinkedNews && allNews.some(n=>n.id===deepLinkedNews)) openNews(deepLinkedNews);
 
   $$("#newsCategories button").forEach(btn=>{
     btn.onclick=()=>{

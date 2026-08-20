@@ -35,6 +35,15 @@
           "value": "public, max-age=300, s-maxage=300"
         }
       ]
+    },
+    {
+      "source": "/api/manifest",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     }
   ]
 }

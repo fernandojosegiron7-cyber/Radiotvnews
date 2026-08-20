@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="RadioTV">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="/api/manifest">
   <link id="favicon" rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link id="appleTouchIcon" rel="apple-touch-icon" href="icons/icon.svg">
   <link rel="stylesheet" href="styles.css">
@@ -29,6 +29,14 @@
       <button id="installBtn" class="iconbtn" hidden aria-label="Instalar aplicación">＋</button>
     </div>
   </header>
+  <div id="breakingBar" class="breaking-bar" hidden>
+    <div class="breaking-inner">
+      <span class="breaking-label">ÚLTIMA HORA</span>
+      <button id="breakingText" class="breaking-text" type="button"></button>
+      <button id="breakingClose" class="breaking-close" type="button" aria-label="Cerrar">×</button>
+    </div>
+  </div>
+
 
   <main>
     <section id="homeView" class="view active">
@@ -105,7 +113,19 @@
         </div>
 
         <div class="radio-info-grid">
-          <div><small>EMISORA</small><strong id="radioStationName">Radio</strong></div>
+          <div><small>EMISORA</small><strong id="radioStationName">Radio</strong>
+        <div class="onair-program" id="onAirProgram">
+          <span class="onair-dot"></span>
+          <div>
+            <small>AHORA AL AIRE</small>
+            <strong id="onAirTitle">Programación en vivo</strong>
+            <span id="onAirHost"></span>
+          </div>
+          <div class="onair-next">
+            <small>SIGUE</small>
+            <span id="nextProgram">—</span>
+          </div>
+        </div></div>
           <div><small>ESTADO</small><strong id="radioState">Disponible</strong></div>
         </div>
       </section>
@@ -175,7 +195,17 @@
       <small id="dialogDate"></small>
       <p id="dialogBody"></p>
     </div>
-  </dialog>
+  
+      <div class="news-share">
+        <span>Compartir</span>
+        <div class="news-share-buttons">
+          <button id="shareWhatsapp" type="button">WhatsApp</button>
+          <button id="shareFacebook" type="button">Facebook</button>
+          <button id="shareCopy" type="button">Copiar enlace</button>
+        </div>
+      </div>
+
+    </dialog>
 
   <div id="toast" class="toast"></div>
 
