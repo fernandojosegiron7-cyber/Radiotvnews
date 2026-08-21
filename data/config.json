@@ -53,7 +53,7 @@
     {
       "id": "programacion",
       "date": "Hoy",
-      "category": "Nacionales",
+      "category": "NACIONALES",
       "title": "Capturan al tiktoker Urías Lobo tras polémico video que involucra a un menor",
       "image": "/assets/uploads/news/1787253989145-2081fcd0.jpg",
       "excerpt": "El creador de contenido Urías Lobo fue capturado en Danlí, El Paraíso, luego de una polémica generada por un video difundido en redes sociales en el que aparece un menor de edad.\n\nEl caso provocó críticas y la intervención de las autoridades, que iniciaron acciones legales para investigar lo ocurrido. Lobo quedó a disposición de la justicia mientras continúa el proceso correspondiente.",
@@ -63,7 +63,7 @@
     {
       "id": "news-1787260324841-u79qj",
       "date": "HOY",
-      "category": "Noticias",
+      "category": "NOTICIAS",
       "title": "Honduras declara alerta roja en 75 municipios ante fuerte sequía provocada por El Niño",
       "image": "https://cdn.latribuna.hn/wp-content/uploads/2026/07/Cenaos-advierte-que-El-Nino-mantiene-en-alerta-a-75-municipios-por-intensa-sequia.jpg",
       "excerpt": "Honduras mantiene 75 municipios en alerta roja debido a la fuerte sequía que afecta varias regiones del país. La falta de lluvias está causando problemas en cultivos, fuentes de agua y producción agrícola, mientras las autoridades coordinan asistencia para las comunidades más afectadas",
@@ -81,13 +81,13 @@
       "featured": true
     },
     {
-      "id": "news-1787271102464-qxabm",
-      "date": "",
-      "category": "Noticias",
-      "title": "Incautan cargamento de supuesta cocaína en zona de manglares de Marcovia",
-      "image": "/assets/uploads/news/1787271157664-39d2e99f.jpg",
-      "excerpt": "Equipos antidrogas incautaron un cargamento de supuesta cocaína en los manglares de Marcovia, Choluteca. Las autoridades realizan las diligencias para determinar la cantidad, procedencia y destino del presunto alcaloide.",
-      "body": "Marcovia, Choluteca.— Equipos especializados en la lucha contra el narcotráfico incautaron un cargamento de supuesta cocaína durante un operativo ejecutado en una zona de manglares del municipio de Marcovia, departamento de Choluteca.\n\nLas autoridades mantienen en desarrollo las diligencias correspondientes para establecer la cantidad exacta de la sustancia decomisada, su procedencia y posible destino.\n\nEl material será sometido a los análisis correspondientes para confirmar oficialmente si se trata de cocaína, mientras continúan las investigaciones relacionadas con el hallazgo.",
+      "id": "news-1787272289061-4moxe",
+      "date": "HOY",
+      "category": "CHOLUTECA",
+      "title": "Detienen a una persona con presuntos dólares ocultos en vehículo en frontera con Nicaragua",
+      "image": "/assets/uploads/news/1787272549938-709c58b2.jpg",
+      "excerpt": "Autoridades detuvieron a una persona en el punto fronterizo La Corteza tras encontrar paquetes con presunto dinero ocultos en compartimientos falsos de un vehículo. El caso es investigado por posible lavado de activos.",
+      "body": "Frontera Honduras–Nicaragua.— Autoridades hondureñas detuvieron a una persona durante una inspección realizada en el punto de control La Corteza, luego de descubrir varios paquetes con dinero, aparentemente dólares, escondidos en compartimientos falsos de un vehículo.\n\nEl hallazgo se produjo durante las labores de vigilancia y revisión efectuadas en la zona fronteriza. Tras detectar los compartimientos ocultos, los agentes procedieron a retener al ocupante del automóvil y asegurar el dinero encontrado.\n\nDebido a las circunstancias en que era transportado el efectivo, las autoridades iniciaron una investigación ante la posible comisión del delito de lavado de activos.\n\nLas diligencias continúan para establecer el monto total decomisado, determinar la procedencia y el posible destino del dinero, así como definir la responsabilidad legal de la persona detenida.",
       "featured": true
     }
   ],
