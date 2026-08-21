@@ -5,7 +5,7 @@
 
   async function loadConfig(){
     const sources=[
-      `/api/public-config?v=${Date.now()}`,
+      `/api/public-config`,
       `/data/config.json?v=${Date.now()}`
     ];
     for(const url of sources){
@@ -31,7 +31,7 @@
     return out;
   }
 
-  const cfg = await loadConfig();
+  let cfg = await loadConfig();
   let bootSafetyTimer=null;
 
 
@@ -368,7 +368,9 @@
 
   // Schedule
   const schedule=$("#scheduleList");
-  if(schedule){
+
+  function renderScheduleContent(){
+    if(!schedule) return;
     schedule.innerHTML=(cfg.schedule||[]).map(x=>`
       <article>
         <time>${esc(x.time)}</time>
@@ -376,6 +378,8 @@
       </article>
     `).join("") || "<p>Sin programación configurada.</p>";
   }
+
+  renderScheduleContent();
 
 
   function timeToMinutes(value=""){
@@ -418,7 +422,7 @@
   setInterval(updateOnAirProgram,60000);
 
   // News
-  const allNews=(cfg.news||[]).map((n,i)=>({...n,id:n.id||`news-${i}`}));
+  let allNews=(cfg.news||[]).map((n,i)=>({...n,id:n.id||`news-${i}`}));
   let currentCategory="Todas";
   let newsSearchTerm="";
 
@@ -592,11 +596,17 @@ function initNewsTicker(){
   });
 
   // Noticias destacadas tipo ROLL-UP
-  const featuredMarked=allNews.filter(n=>n.featured);
-  const featuredPool=[
-    ...featuredMarked,
-    ...allNews.filter(n=>!n.featured)
-  ].filter((n,i,arr)=>arr.findIndex(x=>x.id===n.id)===i).slice(0,6);
+  let featuredPool=[];
+
+  function rebuildFeaturedPool(){
+    const featuredMarked=allNews.filter(n=>n.featured);
+    featuredPool=[
+      ...featuredMarked,
+      ...allNews.filter(n=>!n.featured)
+    ].filter((n,i,arr)=>arr.findIndex(x=>x.id===n.id)===i).slice(0,6);
+  }
+
+  rebuildFeaturedPool();
 
   const featuredNews=$("#featuredNews");
   let featuredIndex=0;
@@ -752,24 +762,44 @@ function initNewsTicker(){
   }
 
   const homeNews=$("#homeNewsGrid");
-  if(homeNews) homeNews.innerHTML=allNews.slice(0,6).map(newsCard).join("");
-  bindNewsClicks();
-
-  const cats=["Todas",...new Set(allNews.map(n=>n.category||"Noticias"))];
   const categories=$("#newsCategories");
-  if(categories){
-    categories.innerHTML=cats.map(c=>`<button class="${c==="Todas"?"active":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+
+  function renderNewsCollections(){
+    if(homeNews) homeNews.innerHTML=allNews.slice(0,6).map(newsCard).join("") || "<p>Sin noticias publicadas.</p>";
+
+    const cats=["Todas",...new Set(allNews.map(n=>n.category||"Noticias"))];
+    if(currentCategory!=="Todas" && !cats.includes(currentCategory)) currentCategory="Todas";
+
+    if(categories){
+      categories.innerHTML=cats.map(c=>`<button class="${c===currentCategory?"active":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+      $$("#newsCategories button").forEach(btn=>{
+        btn.onclick=()=>{
+          currentCategory=btn.dataset.cat;
+          $$("#newsCategories button").forEach(x=>x.classList.toggle("active",x===btn));
+          renderNewsPage();
+        };
+      });
+    }
+
+    bindNewsClicks();
   }
 
   function renderNewsPage(){
-    const list=currentCategory==="Todas" ? allNews : allNews.filter(n=>(n.category||"Noticias")===currentCategory);
+    let list=currentCategory==="Todas" ? allNews : allNews.filter(n=>(n.category||"Noticias")===currentCategory);
+
+    if(newsSearchTerm){
+      const q=newsSearchTerm.toLowerCase();
+      list=list.filter(n=>[n.title,n.excerpt,n.body,n.category]
+        .some(v=>String(v||"").toLowerCase().includes(q)));
+    }
+
     const h=list.find(n=>n.featured)||list[0];
 
     const heroBox=$("#newsHero");
     if(heroBox){
       heroBox.innerHTML=h ? `
         <article class="news-hero-card" data-news-id="${esc(h.id)}">
-          <div class="bg" style="${h.image?`background-image:url('${esc(liveAsset(h.image))}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
+          <div class="bg" style="${h.image?`background-image:url('${esc(liveAssetFresh(h.image))}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>
           <div class="content">
             <span class="news-category">${esc(h.category||"Noticias")}</span>
             <h2>${esc(h.title)}</h2>
@@ -783,6 +813,7 @@ function initNewsTicker(){
     bindNewsClicks();
   }
 
+  renderNewsCollections();
   renderNewsPage();
   initNewsTicker();
 
@@ -807,23 +838,128 @@ function initNewsTicker(){
   const deepLinkedNews=newsIdFromHash();
   if(deepLinkedNews && allNews.some(n=>n.id===deepLinkedNews)) openNews(deepLinkedNews);
 
-  $$("#newsCategories button").forEach(btn=>{
-    btn.onclick=()=>{
-      currentCategory=btn.dataset.cat;
-      $$("#newsCategories button").forEach(x=>x.classList.toggle("active",x===btn));
-      renderNewsPage();
-    };
-  });
 
   // Socials
   const socialNames={facebook:"Facebook",instagram:"Instagram",tiktok:"TikTok",youtube:"YouTube",whatsapp:"WhatsApp"};
   const socials=$("#socialLinks");
-  if(socials){
+
+  function renderSocialLinks(){
+    if(!socials) return;
     socials.innerHTML=Object.entries(cfg.socials||{})
       .filter(([,url])=>url)
       .map(([key,url])=>`<a href="${esc(url)}" target="_blank" rel="noopener">${socialNames[key]||key}</a>`)
       .join("") || "<span style='color:var(--muted);font-size:13px'>Redes no configuradas.</span>";
   }
+
+  renderSocialLinks();
+
+  function applyLiveBranding(){
+    document.documentElement.style.setProperty("--accent",cfg.accent||"#6D5EF9");
+    document.documentElement.style.setProperty("--accent2",cfg.accent2||"#14B8A6");
+    document.title=cfg.stationName||"Radio & TV";
+
+    setText("#stationName",cfg.stationName||"Radio & TV");
+    setText("#stationSlogan",cfg.slogan||"");
+    setText("#heroTitle",cfg.stationName||"Radio & TV");
+    setText("#heroText",cfg.slogan||"");
+    setText("#tvName",cfg.tv?.name||"TV en vivo");
+    setText("#radioStationName",cfg.radio?.name||cfg.stationName||"Radio");
+
+    const bg=resolvedTheme(themeMode)==="light" ? cfg.appearance?.lightBackground : cfg.appearance?.darkBackground;
+    const appBg=$("#appBackground");
+    if(appBg) appBg.style.backgroundImage=bg?`url("${liveAssetFresh(bg)}")`:"";
+
+    const logoSrc=liveAssetFresh(cfg.logo||"");
+    if(logoSrc){
+      const brand=$("#brandLogo");
+      const heroLogo=$("#heroLogo");
+      const radioLogo=$("#radioArtwork");
+
+      if(brand) brand.innerHTML=`<img src="${esc(logoSrc)}" alt="Logo">`;
+      if(heroLogo) heroLogo.innerHTML=`<img src="${esc(logoSrc)}" alt="Logo">`;
+      if(radioLogo) radioLogo.innerHTML=`<img src="${esc(logoSrc)}" alt="Logo de la emisora">`;
+
+      const fav=$("#favicon");
+      const apple=$("#appleTouchIcon");
+      if(fav){fav.href=logoSrc;fav.type="";}
+      if(apple) apple.href=logoSrc;
+    }
+  }
+
+  function refreshOpenNewsContent(){
+    if(!currentOpenNewsId) return;
+    const n=allNews.find(x=>x.id===currentOpenNewsId);
+    const dialog=$("#newsDialog");
+    if(!n){
+      if(dialog?.open) closeNewsAnimated();
+      return;
+    }
+
+    setText("#dialogTitle",n.title||"");
+    setText("#dialogDate",n.date||"");
+    setText("#dialogCategory",n.category||"Noticias");
+    setText("#dialogBody",n.body||n.excerpt||"");
+    const img=$("#dialogImage");
+    if(img){
+      img.hidden=!n.image;
+      if(n.image) img.src=liveAssetFresh(n.image);
+    }
+  }
+
+  let liveConfigSignature=JSON.stringify(cfg);
+  let liveUpdateBusy=false;
+
+  async function checkLiveUpdates(){
+    if(liveUpdateBusy || document.hidden) return;
+    liveUpdateBusy=true;
+
+    try{
+      const r=await fetch("/api/public-config",{
+        cache:"no-store",
+        headers:{"Cache-Control":"no-cache"}
+      });
+      if(!r.ok) return;
+
+      const next=deepMerge(fallback,await r.json());
+      const signature=JSON.stringify(next);
+      if(signature===liveConfigSignature) return;
+
+      cfg=next;
+      liveConfigSignature=signature;
+
+      // Actualizar contenido sin recargar ni detener audio/video.
+      applyLiveBranding();
+      renderScheduleContent();
+      updateOnAirProgram();
+
+      allNews=(cfg.news||[]).map((n,i)=>({...n,id:n.id||`news-${i}`}));
+      featuredIndex=0;
+      rebuildFeaturedPool();
+      renderFeaturedRollup();
+      resetFeaturedTimer();
+      renderNewsCollections();
+      renderNewsPage();
+      refreshOpenNewsContent();
+
+      initNewsTicker();
+      renderSocialLinks();
+
+      // Actualiza nombres/poster sin reiniciar las señales que ya están reproduciéndose.
+      setText("#tvName",cfg.tv?.name||"TV en vivo");
+      setText("#radioStationName",cfg.radio?.name||cfg.stationName||"Radio");
+      if(video && cfg.tv?.poster) video.poster=liveAssetFresh(cfg.tv.poster);
+    }catch(e){
+      console.warn("Actualización en vivo",e);
+    }finally{
+      liveUpdateBusy=false;
+    }
+  }
+
+  // Comprobación ligera en segundo plano. No recarga la página.
+  setInterval(checkLiveUpdates,10000);
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden) setTimeout(checkLiveUpdates,350);
+  });
 
   // Radio
   function normalizeZenoAudioUrl(url=""){
