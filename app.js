@@ -81,6 +81,15 @@
     return raw;
   }
 
+  function liveAssetFresh(value=""){
+    const src=liveAsset(value);
+    if(!src) return "";
+    if(String(value||"").startsWith("/assets/uploads/")){
+      return src + (src.includes("?")?"&":"?") + "v=" + Date.now();
+    }
+    return src;
+  }
+
 
   // Hora y clima en barra superior
   function initTopClock(){
@@ -415,7 +424,7 @@
 
   function newsCard(n){
     return `<article data-news-id="${esc(n.id)}">
-      <div class="newsimg">${n.image?`<img src="${esc(liveAsset(n.image))}" alt="">`:"▣"}</div>
+      <div class="newsimg">${n.image?`<img src="${esc(liveAssetFresh(n.image))}" alt="">`:"▣"}</div>
       <div class="newsbody">
         <span class="news-category">${esc(n.category||"Noticias")}</span>
         <h3>${esc(n.title)}</h3>
@@ -443,7 +452,7 @@
     const img=$("#dialogImage");
     if(img){
       img.hidden=!n.image;
-      if(n.image) img.src=liveAsset(n.image);
+      if(n.image) img.src=liveAssetFresh(n.image);
     }
 
     const dialog=$("#newsDialog");
@@ -596,7 +605,7 @@ function initNewsTicker(){
 
   function featuredSlideMarkup(n){
     if(!n) return "";
-    const image=n.image ? liveAsset(n.image) : "";
+    const image=n.image ? liveAssetFresh(n.image) : "";
     return `
       <article class="rollup-slide" data-news-id="${esc(n.id)}">
         <div class="rollup-bg" style="${image?`background-image:url('${esc(image)}')`:"background:linear-gradient(135deg,var(--accent),var(--accent2))"}"></div>

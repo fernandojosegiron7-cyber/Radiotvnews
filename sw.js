@@ -1,4 +1,4 @@
-const CACHE="radio-tv-pwa-v6-3-2-sin-flash";
+const CACHE="radio-tv-pwa-v6-3-3-fix-fotos";
 const ASSETS=["./","./index.html","./styles.css","./config.js","./app.js","./icons/icon.svg"];
 
 self.addEventListener("install",e=>{

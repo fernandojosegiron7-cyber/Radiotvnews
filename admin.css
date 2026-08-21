@@ -63,3 +63,25 @@
   color:#dce3ec;
   font-weight:800;
 }
+
+
+/* v6.3.3 · Vista previa de imágenes */
+.admin-image-preview{
+  grid-column:1/-1;
+  width:100%;
+  max-width:360px;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+}
+.admin-image-preview[hidden]{
+  display:none!important;
+}
+.admin-image-preview img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}

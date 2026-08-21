@@ -164,6 +164,9 @@
         <input data-field="category" value="${attr(item.category||"Noticias")}" placeholder="Categoría">
         <input data-field="title" value="${attr(item.title||"")}" placeholder="Titular">
         <input data-field="image" value="${attr(item.image||"")}" placeholder="Imagen">
+        <div class="admin-image-preview" data-news-preview ${item.image?"":"hidden"}>
+          ${item.image?`<img src="${attr(publicAssetUrl(item.image))}" alt="Vista previa">`:""}
+        </div>
         <textarea data-field="excerpt" placeholder="Resumen">${attr(item.excerpt||"")}</textarea>
         <textarea data-field="body" placeholder="Texto completo">${attr(item.body||"")}</textarea>
         <label><input data-field="featured" type="checkbox" ${item.featured?"checked":""} style="width:auto"> Destacada</label>
@@ -180,7 +183,14 @@
     if(!file)return toast("Selecciona una imagen");
     const result=await uploadFile(file,"news");
     div.querySelector('[data-field="image"]').value=result.path;
-    toast("Imagen subida");
+
+    const preview=div.querySelector("[data-news-preview]");
+    if(preview){
+      preview.hidden=false;
+      preview.innerHTML=`<img src="${attr(publicAssetUrl(result.path))}" alt="Vista previa">`;
+    }
+
+    toast("Imagen subida. Guarda los cambios.");
   }
 
   async function uploadFile(file,folder){
@@ -199,6 +209,15 @@
   $("#uploadTvPosterBtn").onclick=()=>bindUpload("#tvPosterFile","#tvPoster","tv");
   $("#uploadDarkBgBtn").onclick=()=>bindUpload("#darkBackgroundFile","#darkBackground","background");
   $("#uploadLightBgBtn").onclick=()=>bindUpload("#lightBackgroundFile","#lightBackground","background");
+
+  function publicAssetUrl(value=""){
+    const raw=String(value||"").trim();
+    if(!raw) return "";
+    if(raw.startsWith("/assets/uploads/")){
+      return `/api/public-asset?path=${encodeURIComponent(raw.slice(1))}&v=${Date.now()}`;
+    }
+    return raw;
+  }
 
   function attr(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
   async function bootDashboard(){
