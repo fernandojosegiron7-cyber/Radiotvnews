@@ -46,6 +46,33 @@ async function getFile(path){
   return {sha:body.sha,content};
 }
 
+
+async function getRawFile(path){
+  const {owner,repo,token,branch}=repoEnv();
+  const encoded=path.split("/").map(encodeURIComponent).join("/");
+  const url=`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encoded}?ref=${encodeURIComponent(branch)}`;
+
+  const r=await fetch(url,{
+    headers:{
+      ...headers(token),
+      "Accept":"application/vnd.github.raw+json"
+    }
+  });
+
+  if(r.status===404)return null;
+  if(!r.ok){
+    let message=`GET RAW ${r.status}`;
+    try{
+      const body=await r.json();
+      message=body.message||message;
+    }catch{}
+    throw new Error(message);
+  }
+
+  const ab=await r.arrayBuffer();
+  return Buffer.from(ab);
+}
+
 async function putFile(path,content,message){
   const {owner,repo,token,branch}=repoEnv();
   const current=await getFile(path);
@@ -68,4 +95,4 @@ async function putFile(path,content,message){
   return {commitSha:body.commit?.sha||"",contentPath:body.content?.path||path};
 }
 
-module.exports={getFile,putFile};
+module.exports={getFile,getRawFile,putFile};
