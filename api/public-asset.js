@@ -30,8 +30,11 @@ module.exports=async(req,res)=>{
     const type=TYPES[path.extname(requested).toLowerCase()]||"application/octet-stream";
 
     res.setHeader("Content-Type",type);
-    res.setHeader("Cache-Control","public, max-age=60, s-maxage=60");
-    res.setHeader("Content-Length",String(file.content.length));
+    res.setHeader("Cache-Control","public, max-age=300, s-maxage=300, stale-while-revalidate=60");
+
+    if(!file.content || !file.content.length){
+      return res.status(404).json({error:"Imagen vacía o no disponible"});
+    }
 
     return res.status(200).send(file.content);
   }catch(e){
