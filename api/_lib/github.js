@@ -24,9 +24,26 @@ async function getFile(path){
   const url=`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encoded}?ref=${encodeURIComponent(branch)}`;
   const r=await fetch(url,{headers:headers(token)});
   if(r.status===404)return null;
+
   const body=await r.json();
-  if(!r.ok)throw new Error(body.message||`GitHub GET ${r.status}`);
-  return {sha:body.sha,content:Buffer.from(String(body.content||"").replace(/\n/g,""),"base64")};
+  if(!r.ok)throw new Error(body.message||`GET ${r.status}`);
+
+  let content=Buffer.alloc(0);
+
+  // GitHub entrega "content" directamente para archivos pequeños.
+  if(body.content && body.encoding==="base64"){
+    content=Buffer.from(String(body.content).replace(/\n/g,""),"base64");
+  }
+  // Para imágenes/archivos mayores, Contents API puede omitir "content".
+  // En ese caso leemos el blob real usando git_url.
+  else if(body.git_url){
+    const br=await fetch(body.git_url,{headers:headers(token)});
+    const blob=await br.json();
+    if(!br.ok)throw new Error(blob.message||`GET BLOB ${br.status}`);
+    content=Buffer.from(String(blob.content||"").replace(/\n/g,""),"base64");
+  }
+
+  return {sha:body.sha,content};
 }
 
 async function putFile(path,content,message){
