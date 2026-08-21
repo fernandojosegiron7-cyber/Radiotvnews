@@ -178,10 +178,46 @@
   }
   $("#addNews").onclick=()=>addNews({});
 
+  async function optimizeNewsImage(file){
+    if(!file || !file.type.startsWith("image/")) return file;
+
+    // SVG no se rasteriza.
+    if(file.type==="image/svg+xml") return file;
+
+    try{
+      const bitmap=await createImageBitmap(file);
+      const maxSide=1600;
+      const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+      const width=Math.max(1,Math.round(bitmap.width*scale));
+      const height=Math.max(1,Math.round(bitmap.height*scale));
+
+      const canvas=document.createElement("canvas");
+      canvas.width=width;
+      canvas.height=height;
+
+      const ctx=canvas.getContext("2d",{alpha:false});
+      ctx.drawImage(bitmap,0,0,width,height);
+      bitmap.close?.();
+
+      const blob=await new Promise(resolve=>
+        canvas.toBlob(resolve,"image/jpeg",0.84)
+      );
+
+      if(!blob) return file;
+
+      const base=(file.name||"noticia").replace(/\.[^.]+$/,"");
+      return new File([blob],`${base}.jpg`,{type:"image/jpeg"});
+    }catch(e){
+      console.warn("No se pudo optimizar la imagen",e);
+      return file;
+    }
+  }
+
   async function uploadNews(div){
     const file=div.querySelector("[data-news-file]").files?.[0];
     if(!file)return toast("Selecciona una imagen");
-    const result=await uploadFile(file,"news");
+    const optimized=await optimizeNewsImage(file);
+    const result=await uploadFile(optimized,"news");
     div.querySelector('[data-field="image"]').value=result.path;
 
     const preview=div.querySelector("[data-news-preview]");

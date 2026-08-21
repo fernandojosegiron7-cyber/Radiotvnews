@@ -82,11 +82,16 @@
   }
 
   function liveAssetFresh(value=""){
-    const src=liveAsset(value);
+    const raw=String(value||"").trim();
+    const src=liveAsset(raw);
     if(!src) return "";
-    if(String(value||"").startsWith("/assets/uploads/")){
-      return src + (src.includes("?")?"&":"?") + "v=" + Date.now();
+
+    if(raw.startsWith("/assets/uploads/")){
+      // Cada upload recibe un nombre único. El propio nombre actúa como versión.
+      const version=raw.split("/").pop()||"asset";
+      return src + (src.includes("?")?"&":"?") + "v=" + encodeURIComponent(version);
     }
+
     return src;
   }
 
