@@ -3,9 +3,8 @@ const {getFile}=require("./_lib/github");
 module.exports=async(req,res)=>{
   if(req.method!=="GET")return res.status(405).json({error:"Método no permitido"});
 
-  res.setHeader("Cache-Control","no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0");
-  res.setHeader("Pragma","no-cache");
-  res.setHeader("Expires","0");
+  // Cache muy corto compartido entre visitantes: permite actualización rápida sin sobrecargar el origen.
+  res.setHeader("Cache-Control","public, max-age=0, s-maxage=6, stale-while-revalidate=6");
 
   try{
     const file=await getFile("data/config.json");
