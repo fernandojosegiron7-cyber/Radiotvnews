@@ -32,6 +32,8 @@
   }
 
   const cfg = await loadConfig();
+  let bootSafetyTimer=null;
+
 
   function buildNewsUrl(id){
     const u=new URL(window.location.href);
@@ -46,6 +48,29 @@
   }
   const esc = s => String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
   const setText = (sel,val) => { const el=$(sel); if(el) el.textContent=val; };
+
+  function revealApp(){
+    if(bootSafetyTimer){
+      clearTimeout(bootSafetyTimer);
+      bootSafetyTimer=null;
+    }
+
+    const boot=$("#bootScreen");
+    document.documentElement.classList.remove("app-booting");
+    document.documentElement.classList.add("app-ready");
+
+    if(boot){
+      boot.classList.add("hide");
+      setTimeout(()=>boot.remove(),320);
+    }
+  }
+
+  bootSafetyTimer=setTimeout(()=>{
+    if(document.documentElement.classList.contains("app-booting")){
+      revealApp();
+    }
+  },4000);
+
 
   function liveAsset(value=""){
     const raw=String(value||"").trim();
@@ -1070,4 +1095,9 @@ function initNewsTicker(){
     clearTimeout(toast.t);
     toast.t=setTimeout(()=>el.classList.remove("show"),2200);
   }
+  // Revelar solo después de aplicar la configuración final.
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(revealApp);
+  });
+
 })();

@@ -822,3 +822,51 @@ button.utility-item{
   from{transform:translate3d(0,0,0)}
   to{transform:translate3d(-50%,0,0)}
 }
+
+
+/* v6.3.2 · Sin flash del diseño inicial */
+html.app-booting body{
+  overflow:hidden;
+}
+html.app-booting body > *:not(.boot-screen){
+  visibility:hidden !important;
+}
+.boot-screen{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:grid;
+  place-items:center;
+  background:#0b1018;
+  color:#f7f9fc;
+  opacity:1;
+  transition:opacity .28s ease, visibility .28s ease;
+}
+.boot-screen.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.boot-loader{
+  display:grid;
+  justify-items:center;
+  gap:12px;
+  font-family:Inter,system-ui,-apple-system,sans-serif;
+}
+.boot-loader strong{
+  font-size:12px;
+  letter-spacing:.7px;
+  font-weight:800;
+  opacity:.72;
+}
+.boot-pulse{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.14);
+  border-top-color:#fff;
+  animation:bootSpin .8s linear infinite;
+}
+@keyframes bootSpin{
+  to{transform:rotate(360deg)}
+}
