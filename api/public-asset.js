@@ -1,5 +1,5 @@
 const path=require("path");
-const {getFile}=require("./_lib/github");
+const {getRawFile}=require("./_lib/github");
 
 const TYPES={
   ".png":"image/png",
@@ -22,21 +22,18 @@ module.exports=async(req,res)=>{
       return res.status(400).json({error:"Ruta no permitida"});
     }
 
-    const file=await getFile(requested);
-    if(!file){
-      return res.status(404).end();
+    const content=await getRawFile(requested);
+    if(!content || !content.length){
+      return res.status(404).json({error:"Imagen no disponible"});
     }
 
     const type=TYPES[path.extname(requested).toLowerCase()]||"application/octet-stream";
 
     res.setHeader("Content-Type",type);
-    res.setHeader("Cache-Control","public, max-age=300, s-maxage=300, stale-while-revalidate=60");
+    res.setHeader("Cache-Control","no-store, max-age=0");
+    res.setHeader("X-Content-Type-Options","nosniff");
 
-    if(!file.content || !file.content.length){
-      return res.status(404).json({error:"Imagen vacía o no disponible"});
-    }
-
-    return res.status(200).send(file.content);
+    return res.status(200).send(content);
   }catch(e){
     console.error("public-asset:",e);
     return res.status(500).json({
